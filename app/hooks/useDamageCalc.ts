@@ -22,7 +22,7 @@ function toPokemon({ name, ...options }: PokemonInput) {
 }
 
 function toPercent(damage: number, maxHP: number) {
-  return Math.round((damage / maxHP) * 1000) / 10;
+  return Math.floor((damage / maxHP) * 1000) / 10;
 }
 
 function validatePokemon(input: PokemonInput, label: string) {
