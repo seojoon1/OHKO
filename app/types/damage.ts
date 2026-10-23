@@ -69,3 +69,7 @@ export interface DamageCalcResult {
   koChance: string;
   desc: string;
 }
+
+export type DamageCalcState =
+  | { result: DamageCalcResult; error: null }
+  | { result: null; error: string };
