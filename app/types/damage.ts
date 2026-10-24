@@ -1,47 +1,17 @@
 import type { StatsTable } from "@smogon/calc";
 
-export type Weather =
-  | "Sand"
-  | "Sun"
-  | "Rain"
-  | "Snow"
-  | "Harsh Sunshine"
-  | "Heavy Rain"
-  | "Strong Winds";
+export type Weather = "Sand" | "Sun" | "Rain" | "Snow";
 
 export type Terrain = "Electric" | "Grassy" | "Psychic" | "Misty";
 
-export type TypeName =
-  | "Normal"
-  | "Fighting"
-  | "Flying"
-  | "Poison"
-  | "Ground"
-  | "Rock"
-  | "Bug"
-  | "Ghost"
-  | "Steel"
-  | "Fire"
-  | "Water"
-  | "Grass"
-  | "Electric"
-  | "Psychic"
-  | "Ice"
-  | "Dragon"
-  | "Dark"
-  | "Fairy"
-  | "Stellar";
-
 export interface PokemonInput {
   name: string;
-  level?: number;
   nature?: string;
   ability?: string;
   item?: string;
   /** 능력 포인트 */
   sp?: Partial<StatsTable>;
   boosts?: Partial<StatsTable>;
-  teraType?: TypeName;
 }
 
 export interface MoveInput {
