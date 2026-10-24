@@ -26,7 +26,10 @@ function judge(n: number, chance: number | undefined, maxDamage: number) {
   // kochance 는 5타 이상이면 n = 0 을 준다.
   if (n === 0) return { verdict: "survive" as const, label: "버팀 (5타 이상)" };
   const kind = chance === undefined || chance >= 1 ? "확정" : "난수";
-  const hits = `${kind} ${n}타${kind === "난수" ? ` (${Math.round((chance ?? 0) * 100)}%)` : ""}`;
+  const percent = (chance ?? 0) * 100;
+  // 아주 낮은 확률이 "0%"로 반올림되지 않게 한다.
+  const chanceLabel = percent < 1 ? "1% 미만" : `${Math.round(percent)}%`;
+  const hits = `${kind} ${n}타${kind === "난수" ? ` (${chanceLabel})` : ""}`;
   if (n >= 2) return { verdict: "survive" as const, label: `버팀 · ${hits}` };
   return { verdict: kind === "확정" ? ("ohko" as const) : ("roll" as const), label: hits };
 }
