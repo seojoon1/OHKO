@@ -35,6 +35,29 @@ function natureFor(move: string, natures: BattleRow[]) {
   );
 }
 
+// 능력 포인트도 기술마다 고른다. 그 기술의 공격 능력치에 포인트를 준 분배 중 통계 상위를 쓴다.
+// (물리형/특수형 분배가 섞여 집계돼서, 1위만 쓰면 특수 기술에 A32 분배가 들어간다.)
+function statPointsFor(move: string, spreads: BattleRow[]) {
+  const physical = moveCategory(move) === "Physical";
+  const spread =
+    spreads.find((row) =>
+      Number(physical ? row.attack_points : row.sp_atk_points),
+    ) ?? spreads[0];
+  return toStatPoints(spread);
+}
+
+// 폼의 공격/특공 중 높은 쪽 기술을 먼저 고른다.
+// 통계는 메가와 원종을 합쳐 집계해서, 특수형인 메가한카리아스Z에 지진/역린이 섞이는 걸 막는다.
+function pickMoves(name: string, moveRows: BattleRow[]) {
+  const stats = gen.species.get(toID(name) as never)?.baseStats;
+  const main = stats && stats.spa > stats.atk ? "Special" : "Physical";
+  const attacks = moveRows.filter((row) => isAttackMove(row.name));
+  return [
+    ...attacks.filter((row) => moveCategory(row.name) === main),
+    ...attacks.filter((row) => moveCategory(row.name) !== main),
+  ].slice(0, MOVE_COUNT);
+}
+
 function toStatPoints(row?: BattleRow) {
   if (!row) return {};
   return {
@@ -68,15 +91,14 @@ async function buildOpponent(
       .filter((row) => row.category === category)
       .sort((a, b) => a.rank - b.rank);
   const natures = byRank("stat_alignment");
+  const spreads = byRank("stat_points");
 
-  const moves = byRank("move")
-    .filter((row) => isAttackMove(row.name))
-    .slice(0, MOVE_COUNT)
-    .map((row) => ({
-      name: row.name,
-      koName: toKoName("move", row.name),
-      nature: natureFor(row.name, natures),
-    }));
+  const moves = pickMoves(name, byRank("move")).map((row) => ({
+    name: row.name,
+    koName: toKoName("move", row.name),
+    nature: natureFor(row.name, natures),
+    sp: statPointsFor(row.name, spreads),
+  }));
 
   return {
     position: entry.position,
@@ -85,7 +107,7 @@ async function buildOpponent(
     sprite: entry.sprite,
     ability,
     item,
-    sp: toStatPoints(top("stat_points")),
+    sp: toStatPoints(spreads[0]),
     moves,
   };
 }
