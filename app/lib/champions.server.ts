@@ -32,6 +32,46 @@ export function getIndex() {
   return fetchCached<IndexResponse>("/api/index");
 }
 
+// ?format= 값 → BattleFormat (기본 싱글)
+export function toFormat(value: string | null): BattleFormat {
+  return value === "Doubles" ? "Doubles" : "Singles";
+}
+
+export interface RankingEntry {
+  position: number;
+  showdownId: string;
+  name: string;
+  sprite: string;
+  move?: string;
+  item?: string;
+  ability?: string;
+  nature?: string;
+}
+
+// 인덱스에서 사용률 순위와 항목별 1위만 추린다.
+export async function getRanking(format: BattleFormat) {
+  const index = await getIndex();
+  return index.pokemon
+    .flatMap((pokemon): RankingEntry[] => {
+      const summary = pokemon.summary.battleSummary?.Current?.[format];
+      if (!summary) return [];
+      const { top } = summary;
+      return [
+        {
+          position: summary.position,
+          showdownId: pokemon.showdownId,
+          name: pokemon.name,
+          sprite: `${API_BASE}/${pokemon.summary.sprite}`,
+          move: top.move?.name,
+          item: top.held_item?.name,
+          ability: top.ability?.name,
+          nature: top.stat_alignment?.name,
+        },
+      ];
+    })
+    .sort((a, b) => a.position - b.position);
+}
+
 export function getBattle(format: BattleFormat, showdownId: string) {
   return fetchCached<BattleResponse>(
     `/api/battle/${format}/${encodeURIComponent(showdownId)}`,
