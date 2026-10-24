@@ -1,5 +1,6 @@
 import { Generations, toID, type StatID } from "@smogon/calc";
 
+import { SearchSelect } from "~/components/SearchSelect";
 import { usePokemonSearch } from "~/hooks/usePokemonSearch";
 import { toKoName } from "~/lib/names";
 import type { PokemonInput } from "~/types/damage";
@@ -29,7 +30,7 @@ const STAT_KO: Record<string, string> = {
 
 const NATURES = [...gen.natures]
   .map((nature) => ({
-    name: nature.name,
+    value: nature.name,
     label:
       nature.plus === nature.minus || !nature.plus || !nature.minus
         ? toKoName("nature", nature.name)
@@ -38,7 +39,7 @@ const NATURES = [...gen.natures]
   .sort((a, b) => a.label.localeCompare(b.label, "ko"));
 
 const ITEMS = [...gen.items]
-  .map((item) => ({ name: item.name, label: toKoName("item", item.name) }))
+  .map((item) => ({ value: item.name, label: toKoName("item", item.name) }))
   .sort((a, b) => a.label.localeCompare(b.label, "ko"));
 
 function abilitiesOf(name: string) {
@@ -107,58 +108,40 @@ export function MyPokemonForm({ value, onChange }: Props) {
       {value && (
         <>
           <div className="grid gap-2 text-sm sm:grid-cols-3">
-            <label className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1">
               성격
-              <select
-                value={value.nature ?? ""}
-                onChange={(event) =>
-                  onChange({ ...value, nature: event.target.value || undefined })
-                }
+              <SearchSelect
+                options={NATURES}
+                value={value.nature}
+                onChange={(nature) => onChange({ ...value, nature })}
+                emptyLabel="선택 안 함"
                 className={fieldClass}
-              >
-                <option value="">선택 안 함</option>
-                {NATURES.map((nature) => (
-                  <option key={nature.name} value={nature.name}>
-                    {nature.label}
-                  </option>
-                ))}
-              </select>
-            </label>
+              />
+            </div>
 
-            <label className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1">
               특성
-              <select
-                value={value.ability ?? ""}
-                onChange={(event) =>
-                  onChange({ ...value, ability: event.target.value })
-                }
+              <SearchSelect
+                options={abilitiesOf(value.name).map((ability) => ({
+                  value: ability,
+                  label: toKoName("ability", ability),
+                }))}
+                value={value.ability}
+                onChange={(ability) => onChange({ ...value, ability })}
                 className={fieldClass}
-              >
-                {abilitiesOf(value.name).map((ability) => (
-                  <option key={ability} value={ability}>
-                    {toKoName("ability", ability)}
-                  </option>
-                ))}
-              </select>
-            </label>
+              />
+            </div>
 
-            <label className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1">
               도구
-              <select
-                value={value.item ?? ""}
-                onChange={(event) =>
-                  onChange({ ...value, item: event.target.value || undefined })
-                }
+              <SearchSelect
+                options={ITEMS}
+                value={value.item}
+                onChange={(item) => onChange({ ...value, item })}
+                emptyLabel="없음"
                 className={fieldClass}
-              >
-                <option value="">없음</option>
-                {ITEMS.map((item) => (
-                  <option key={item.name} value={item.name}>
-                    {item.label}
-                  </option>
-                ))}
-              </select>
-            </label>
+              />
+            </div>
           </div>
 
           <div className="text-sm">
