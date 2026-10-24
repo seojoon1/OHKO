@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import type { Route } from "./+types/home";
 import { FormatToggle } from "~/components/FormatToggle";
 import { getRanking, toFormat } from "~/lib/champions.server";
+import { toKoName } from "~/lib/names";
 
 export function meta({}: Route.MetaArgs) {
   return [{ title: "OHKO" }];
@@ -10,7 +11,15 @@ export function meta({}: Route.MetaArgs) {
 
 export async function loader({ request }: Route.LoaderArgs) {
   const format = toFormat(new URL(request.url).searchParams.get("format"));
-  return { format, ranking: await getRanking(format) };
+  const ranking = (await getRanking(format)).map((entry) => ({
+    ...entry,
+    name: toKoName("pokemon", entry.showdownId),
+    move: entry.move && toKoName("move", entry.move),
+    item: entry.item && toKoName("item", entry.item),
+    ability: entry.ability && toKoName("ability", entry.ability),
+    nature: entry.nature && toKoName("nature", entry.nature),
+  }));
+  return { format, ranking };
 }
 
 export default function Home({ loaderData }: Route.ComponentProps) {

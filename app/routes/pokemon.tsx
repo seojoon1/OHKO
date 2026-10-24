@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import type { Route } from "./+types/pokemon";
 import { FormatToggle } from "~/components/FormatToggle";
 import { getBattle, toFormat } from "~/lib/champions.server";
+import { type NameKind, toKoName } from "~/lib/names";
 import type { BattleCategory, BattleRow } from "~/types/champions";
 
 export function meta({ loaderData }: Route.MetaArgs) {
@@ -13,11 +14,36 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   const format = toFormat(new URL(request.url).searchParams.get("format"));
   try {
     const battle = await getBattle(format, params.id);
-    return { format, pokemon: battle.pokemon, rows: battle.rows };
+    const rows = battle.rows.map((row) => {
+      const kind = NAME_KIND[row.category];
+      return kind ? { ...row, name: toKoName(kind, row.name) } : row;
+    });
+    return {
+      format,
+      pokemon: toKoName("pokemon", battle.showdownId),
+      rows,
+    };
   } catch {
     throw new Response("포켓몬을 찾을 수 없습니다.", { status: 404 });
   }
 }
+
+// 항목 → 한글 이름 종류 (stat_points 는 이름이 없다)
+const NAME_KIND: Partial<Record<BattleCategory, NameKind>> = {
+  move: "move",
+  held_item: "item",
+  ability: "ability",
+  stat_alignment: "nature",
+  teammate: "pokemon",
+};
+
+const STAT_KO: Record<string, string> = {
+  Attack: "공격",
+  Defense: "방어",
+  "Sp. Atk": "특공",
+  "Sp. Def": "특방",
+  Speed: "스피드",
+};
 
 const SECTIONS: { category: BattleCategory; title: string }[] = [
   { category: "move", title: "기술" },
@@ -43,7 +69,9 @@ function statPointsLabel(row: BattleRow) {
 function rowLabel(row: BattleRow) {
   if (row.category === "stat_points") return statPointsLabel(row);
   if (row.category === "stat_alignment" && row.stat_up) {
-    return `${row.name} (+${row.stat_up} / -${row.stat_down})`;
+    const up = STAT_KO[row.stat_up] ?? row.stat_up;
+    const down = STAT_KO[row.stat_down] ?? row.stat_down;
+    return `${row.name} (+${up} / -${down})`;
   }
   return row.name;
 }
