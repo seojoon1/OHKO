@@ -1,8 +1,11 @@
+import { useState } from "react";
 import { Link } from "react-router";
 
 import type { Route } from "./+types/home";
+import { MyPokemonForm } from "~/components/MyPokemonForm";
 import { toFormat } from "~/lib/champions.server";
 import { getOpponents } from "~/lib/opponents.server";
+import type { PokemonInput } from "~/types/damage";
 
 const OPPONENT_COUNT = 20;
 
@@ -17,6 +20,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 export default function Home({ loaderData }: Route.ComponentProps) {
   const { opponents } = loaderData;
+  const [myPokemon, setMyPokemon] = useState<PokemonInput | null>(null);
 
   return (
     <main className="mx-auto max-w-4xl p-4">
@@ -27,7 +31,9 @@ export default function Home({ loaderData }: Route.ComponentProps) {
         </Link>
       </div>
 
-      <h2 className="mb-2 font-semibold">상위 {OPPONENT_COUNT}마리 세팅</h2>
+      <MyPokemonForm value={myPokemon} onChange={setMyPokemon} />
+
+      <h2 className="mt-6 mb-2 font-semibold">상위 {OPPONENT_COUNT}마리 세팅</h2>
       <ol className="text-sm">
         {opponents.map((opponent) => (
           <li

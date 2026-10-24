@@ -1,0 +1,193 @@
+import { Generations, toID, type StatID } from "@smogon/calc";
+
+import { usePokemonSearch } from "~/hooks/usePokemonSearch";
+import { toKoName } from "~/lib/names";
+import type { PokemonInput } from "~/types/damage";
+
+const gen = Generations.get(0);
+
+// 챔피언스 능력 포인트 규칙
+export const SP_MAX_PER_STAT = 32;
+export const SP_MAX_TOTAL = 66;
+
+const STATS: { id: StatID; label: string }[] = [
+  { id: "hp", label: "H" },
+  { id: "atk", label: "A" },
+  { id: "def", label: "B" },
+  { id: "spa", label: "C" },
+  { id: "spd", label: "D" },
+  { id: "spe", label: "S" },
+];
+
+const STAT_KO: Record<string, string> = {
+  atk: "공격",
+  def: "방어",
+  spa: "특공",
+  spd: "특방",
+  spe: "스피드",
+};
+
+const NATURES = [...gen.natures]
+  .map((nature) => ({
+    name: nature.name,
+    label:
+      nature.plus === nature.minus || !nature.plus || !nature.minus
+        ? toKoName("nature", nature.name)
+        : `${toKoName("nature", nature.name)} (+${STAT_KO[nature.plus]} -${STAT_KO[nature.minus]})`,
+  }))
+  .sort((a, b) => a.label.localeCompare(b.label, "ko"));
+
+const ITEMS = [...gen.items]
+  .map((item) => ({ name: item.name, label: toKoName("item", item.name) }))
+  .sort((a, b) => a.label.localeCompare(b.label, "ko"));
+
+function abilitiesOf(name: string) {
+  const species = gen.species.get(toID(name) as never);
+  return Object.values(species?.abilities ?? {}).filter(Boolean);
+}
+
+function spTotal(sp: PokemonInput["sp"] = {}) {
+  return Object.values(sp).reduce((sum, value) => sum + (value ?? 0), 0);
+}
+
+interface Props {
+  value: PokemonInput | null;
+  onChange: (value: PokemonInput) => void;
+}
+
+const fieldClass =
+  "rounded border border-gray-300 bg-transparent px-2 py-1 dark:border-gray-700";
+
+export function MyPokemonForm({ value, onChange }: Props) {
+  const { query, setQuery, results } = usePokemonSearch();
+  const remaining = SP_MAX_TOTAL - spTotal(value?.sp);
+
+  function selectPokemon(name: string) {
+    setQuery("");
+    onChange({ name, ability: abilitiesOf(name)[0], sp: {} });
+  }
+
+  function setStat(stat: StatID, raw: number) {
+    if (!value) return;
+    const current = value.sp?.[stat] ?? 0;
+    // 능력치당 32, 합계 66을 넘지 않게 자른다.
+    const limit = Math.min(SP_MAX_PER_STAT, current + remaining);
+    const next = Math.max(0, Math.min(limit, Math.floor(raw) || 0));
+    onChange({ ...value, sp: { ...value.sp, [stat]: next } });
+  }
+
+  return (
+    <section className="space-y-3 rounded border border-gray-200 p-4 dark:border-gray-800">
+      <div className="relative">
+        <input
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder={
+            value ? toKoName("pokemon", value.name) : "내 포켓몬 검색 (예: ㅎㅋㄹ)"
+          }
+          className={`${fieldClass} w-full`}
+        />
+        {results.length > 0 && (
+          <ul className="absolute z-10 mt-1 max-h-64 w-full overflow-y-auto rounded border border-gray-300 bg-white text-sm shadow dark:border-gray-700 dark:bg-gray-900">
+            {results.map((result) => (
+              <li key={result.id}>
+                <button
+                  type="button"
+                  onClick={() => selectPokemon(result.name)}
+                  className="w-full px-2 py-1 text-left hover:bg-gray-100 dark:hover:bg-gray-800"
+                >
+                  {result.koName}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      {value && (
+        <>
+          <div className="grid gap-2 text-sm sm:grid-cols-3">
+            <label className="flex flex-col gap-1">
+              성격
+              <select
+                value={value.nature ?? ""}
+                onChange={(event) =>
+                  onChange({ ...value, nature: event.target.value || undefined })
+                }
+                className={fieldClass}
+              >
+                <option value="">선택 안 함</option>
+                {NATURES.map((nature) => (
+                  <option key={nature.name} value={nature.name}>
+                    {nature.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="flex flex-col gap-1">
+              특성
+              <select
+                value={value.ability ?? ""}
+                onChange={(event) =>
+                  onChange({ ...value, ability: event.target.value })
+                }
+                className={fieldClass}
+              >
+                {abilitiesOf(value.name).map((ability) => (
+                  <option key={ability} value={ability}>
+                    {toKoName("ability", ability)}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="flex flex-col gap-1">
+              도구
+              <select
+                value={value.item ?? ""}
+                onChange={(event) =>
+                  onChange({ ...value, item: event.target.value || undefined })
+                }
+                className={fieldClass}
+              >
+                <option value="">없음</option>
+                {ITEMS.map((item) => (
+                  <option key={item.name} value={item.name}>
+                    {item.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+
+          <div className="text-sm">
+            <div className="mb-1 flex justify-between">
+              <span>능력 포인트</span>
+              <span className="text-gray-500">
+                남은 포인트 {remaining} / {SP_MAX_TOTAL}
+              </span>
+            </div>
+            <div className="grid grid-cols-6 gap-2">
+              {STATS.map((stat) => (
+                <label key={stat.id} className="flex flex-col gap-1">
+                  {stat.label}
+                  <input
+                    type="number"
+                    min={0}
+                    max={SP_MAX_PER_STAT}
+                    value={value.sp?.[stat.id] ?? 0}
+                    onChange={(event) =>
+                      setStat(stat.id, Number(event.target.value))
+                    }
+                    className={`${fieldClass} w-full`}
+                  />
+                </label>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+    </section>
+  );
+}
