@@ -226,6 +226,8 @@ async function pokemonKo(slug, { name, baseSpecies }) {
       label: koName(json.form_names),
     }));
     if (form.ko) return form.ko;
+    // 기본 폼 라벨 "로토무의 모습"은 이름이 아니므로 종 이름을 쓴다.
+    if (form.label === `${speciesKo}의 모습`) return speciesKo;
     if (form.label) {
       return form.label.includes(speciesKo)
         ? form.label
