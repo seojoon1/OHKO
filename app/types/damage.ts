@@ -38,8 +38,8 @@ export interface PokemonInput {
   nature?: string;
   ability?: string;
   item?: string;
-  evs?: Partial<StatsTable>;
-  ivs?: Partial<StatsTable>;
+  /** 능력 포인트 */
+  sp?: Partial<StatsTable>;
   boosts?: Partial<StatsTable>;
   teraType?: TypeName;
 }

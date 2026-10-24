@@ -18,8 +18,9 @@ import type {
 // 0 = 포켓몬 챔피언스
 const gen = Generations.get(0);
 
-function toPokemon({ name, ...options }: PokemonInput) {
-  return new Pokemon(gen, name, options);
+// 챔피언스 모드에서는 evs 자리에 능력 포인트를 넣는다.
+function toPokemon({ name, sp, ...options }: PokemonInput) {
+  return new Pokemon(gen, name, { ...options, evs: sp });
 }
 
 function toPercent(damage: number, maxHP: number) {
