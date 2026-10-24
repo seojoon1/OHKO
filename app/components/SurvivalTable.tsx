@@ -50,7 +50,7 @@ export function SurvivalTable({
     ...toMega(myPokemon.name, myPokemon.item, myPokemon.ability),
   };
 
-  const rows = opponents.flatMap((opponent) =>
+  const rows = opponents.flatMap((opponent, opponentIndex) =>
     opponent.moves.map((move, index) => {
       const { result, error } = calcDamage({
         attacker: {
@@ -75,7 +75,8 @@ export function SurvivalTable({
       const judgement = result
         ? judge(result.ko.n, result.ko.chance, result.range[1])
         : null;
-      return { opponent, move, index, result, error, judgement };
+      const key = `${opponentIndex}-${index}`;
+      return { key, opponent, move, index, result, error, judgement };
     }),
   );
 
@@ -104,9 +105,9 @@ export function SurvivalTable({
           </tr>
         </thead>
         <tbody>
-          {rows.map(({ opponent, move, index, result, error, judgement }) => (
+          {rows.map(({ key, opponent, move, index, result, error, judgement }) => (
             <tr
-              key={`${opponent.name}-${move.name}`}
+              key={key}
               className={
                 index === opponent.moves.length - 1
                   ? "border-b border-gray-200 dark:border-gray-800"
@@ -116,15 +117,18 @@ export function SurvivalTable({
               {index === 0 && (
                 <td rowSpan={opponent.moves.length} className="py-1 pr-2 align-top">
                   <span className="flex items-center gap-2">
-                    <img
-                      src={opponent.sprite}
-                      alt=""
-                      width={32}
-                      height={32}
-                      loading="lazy"
-                    />
+                    {opponent.sprite && (
+                      <img
+                        src={opponent.sprite}
+                        alt=""
+                        width={32}
+                        height={32}
+                        loading="lazy"
+                      />
+                    )}
                     <span>
-                      {opponent.position}. {opponent.koName}
+                      {opponent.position && `${opponent.position}. `}
+                      {opponent.koName}
                     </span>
                   </span>
                 </td>

@@ -54,9 +54,15 @@ function spTotal(sp: PokemonInput["sp"] = {}) {
 interface Props {
   value: PokemonInput | null;
   onChange: (value: PokemonInput) => void;
+  /** 포켓몬 검색창 안내 문구 */
+  placeholder?: string;
 }
 
-export function MyPokemonForm({ value, onChange }: Props) {
+export function MyPokemonForm({
+  value,
+  onChange,
+  placeholder = "내 포켓몬 검색 (예: ㅎㅋㄹ)",
+}: Props) {
   const remaining = SP_MAX_TOTAL - spTotal(value?.sp);
 
   function selectPokemon(name: string) {
@@ -77,7 +83,7 @@ export function MyPokemonForm({ value, onChange }: Props) {
       <PokemonPicker
         onSelect={selectPokemon}
         placeholder={
-          value ? toKoName("pokemon", value.name) : "내 포켓몬 검색 (예: ㅎㅋㄹ)"
+          value ? toKoName("pokemon", value.name) : placeholder
         }
       />
 

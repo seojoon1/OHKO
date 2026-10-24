@@ -9,12 +9,12 @@ export interface OpponentMove {
 
 /** 사용률 상위 포켓몬의 대표 세팅 (각 항목 1위) */
 export interface OpponentSet {
-  /** 사용률 순위 */
-  position: number;
+  /** 사용률 순위. 사용자 지정 상대는 없다. */
+  position?: number;
   /** 계산기 입력용 Showdown 이름. 메가스톤을 들면 메가 폼 ("Garchomp-Mega-Z") */
   name: string;
   koName: string;
-  sprite: string;
+  sprite?: string;
   ability?: string;
   item?: string;
   /** 능력 포인트 */

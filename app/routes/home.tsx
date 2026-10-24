@@ -2,6 +2,12 @@ import { useState } from "react";
 import { Link } from "react-router";
 
 import type { Route } from "./+types/home";
+import {
+  type CustomOpponent,
+  CustomOpponents,
+  emptyCustomOpponent,
+  toOpponentSets,
+} from "~/components/CustomOpponents";
 import { FormatToggle } from "~/components/FormatToggle";
 import { MyPokemonForm } from "~/components/MyPokemonForm";
 import {
@@ -34,10 +40,16 @@ export default function Home({ loaderData }: Route.ComponentProps) {
   const [weather, setWeather] = useState<Weather>();
 
   const sample = useSampleOpponents(format);
+  const [customs, setCustoms] = useState<CustomOpponent[]>([
+    emptyCustomOpponent(1),
+  ]);
 
-  // 모드별 상대 목록. 사용자 지정은 다음 작업에서 채운다.
   const modeOpponents =
-    mode === "top" ? opponents : mode === "sample" ? sample.opponents : [];
+    mode === "top"
+      ? opponents
+      : mode === "sample"
+        ? sample.opponents
+        : toOpponentSets(customs);
 
   return (
     <main className="mx-auto max-w-7xl p-4">
@@ -63,6 +75,9 @@ export default function Home({ loaderData }: Route.ComponentProps) {
         <section className="space-y-3">
           <OpponentModeTabs value={mode} onChange={setMode} />
           {mode === "sample" && <SampleOpponents sample={sample} />}
+          {mode === "custom" && (
+            <CustomOpponents value={customs} onChange={setCustoms} />
+          )}
           <div className="flex justify-end">
             <WeatherSelect value={weather} onChange={setWeather} />
           </div>
