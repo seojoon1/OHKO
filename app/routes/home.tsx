@@ -1,3 +1,5 @@
+import { Link } from "react-router";
+
 import type { Route } from "./+types/home";
 import { getRanking, toFormat } from "~/lib/champions.server";
 
@@ -36,7 +38,10 @@ export default function Home({ loaderData }: Route.ComponentProps) {
             >
               <td className="py-1 pr-2">{entry.position}</td>
               <td className="py-1 pr-2">
-                <span className="flex items-center gap-2">
+                <Link
+                  to={`/pokemon/${entry.showdownId}?format=${format}`}
+                  className="flex items-center gap-2 hover:underline"
+                >
                   <img
                     src={entry.sprite}
                     alt=""
@@ -45,7 +50,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
                     loading="lazy"
                   />
                   {entry.name}
-                </span>
+                </Link>
               </td>
               <td className="py-1 pr-2">{entry.move}</td>
               <td className="py-1 pr-2">{entry.item}</td>
