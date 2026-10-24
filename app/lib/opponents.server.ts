@@ -3,7 +3,11 @@
 
 import { Generations, toID } from "@smogon/calc";
 
-import { getBattle, getRanking } from "~/lib/champions.server";
+import {
+  getBattle,
+  getRanking,
+  type RankingEntry,
+} from "~/lib/champions.server";
 import { toMega } from "~/lib/mega";
 import { toKoName } from "~/lib/names";
 import type { BattleFormat, BattleRow } from "~/types/champions";
@@ -43,49 +47,79 @@ function toStatPoints(row?: BattleRow) {
   };
 }
 
+// item 을 주면 통계 1위 도구 대신 그 도구를 든다 (메가 폼을 직접 고른 경우).
+async function buildOpponent(
+  format: BattleFormat,
+  entry: RankingEntry,
+  forcedItem?: string,
+): Promise<OpponentSet> {
+  const { rows } = await getBattle(format, entry.showdownId);
+  const top = (category: BattleRow["category"]) =>
+    rows.find((row) => row.category === category && row.rank === 1);
+
+  const species =
+    gen.species.get(toID(entry.showdownId) as never)?.name ?? entry.name;
+  const item = forcedItem ?? top("held_item")?.name;
+  // 통계의 특성은 메가진화 전 특성이라 메가 폼이면 바뀐다.
+  const { name, ability } = toMega(species, item, top("ability")?.name);
+
+  const byRank = (category: BattleRow["category"]) =>
+    rows
+      .filter((row) => row.category === category)
+      .sort((a, b) => a.rank - b.rank);
+  const natures = byRank("stat_alignment");
+
+  const moves = byRank("move")
+    .filter((row) => isAttackMove(row.name))
+    .slice(0, MOVE_COUNT)
+    .map((row) => ({
+      name: row.name,
+      koName: toKoName("move", row.name),
+      nature: natureFor(row.name, natures),
+    }));
+
+  return {
+    position: entry.position,
+    name,
+    koName: toKoName("pokemon", name),
+    sprite: entry.sprite,
+    ability,
+    item,
+    sp: toStatPoints(top("stat_points")),
+    moves,
+  };
+}
+
 export async function getOpponents(
   format: BattleFormat,
   limit: number,
 ): Promise<OpponentSet[]> {
   const ranking = (await getRanking(format)).slice(0, limit);
+  return Promise.all(ranking.map((entry) => buildOpponent(format, entry)));
+}
 
-  return Promise.all(
-    ranking.map(async (entry) => {
-      const { rows } = await getBattle(format, entry.showdownId);
-      const top = (category: BattleRow["category"]) =>
-        rows.find((row) => row.category === category && row.rank === 1);
+// 메가 폼 → 그 메가스톤 이름 ("Garchomp-Mega-Z" → "Garchompite Z")
+function megaStoneOf(mega: string) {
+  for (const item of gen.items) {
+    if (Object.values(item.megaStone ?? {}).includes(mega as never)) {
+      return item.name;
+    }
+  }
+  return undefined;
+}
 
-      const species =
-        gen.species.get(toID(entry.showdownId) as never)?.name ?? entry.name;
-      const item = top("held_item")?.name;
-      // 통계의 특성은 메가진화 전 특성이라 메가 폼이면 바뀐다.
-      const { name, ability } = toMega(species, item, top("ability")?.name);
+// 포켓몬 하나의 통계 세팅. 통계에 없는 포켓몬이면 null.
+// 메가 폼은 통계가 원종으로 집계되므로 원종 통계에 그 메가스톤을 들려서 만든다.
+export async function getOpponent(
+  format: BattleFormat,
+  name: string,
+): Promise<OpponentSet | null> {
+  const ranking = await getRanking(format);
+  const species = gen.species.get(toID(name) as never);
+  const stone = species ? megaStoneOf(species.name) : undefined;
+  const statsId = toID(stone && species?.baseSpecies ? species.baseSpecies : name);
 
-      const byRank = (category: BattleRow["category"]) =>
-        rows
-          .filter((row) => row.category === category)
-          .sort((a, b) => a.rank - b.rank);
-      const natures = byRank("stat_alignment");
-
-      const moves = byRank("move")
-        .filter((row) => isAttackMove(row.name))
-        .slice(0, MOVE_COUNT)
-        .map((row) => ({
-          name: row.name,
-          koName: toKoName("move", row.name),
-          nature: natureFor(row.name, natures),
-        }));
-
-      return {
-        position: entry.position,
-        name,
-        koName: toKoName("pokemon", name),
-        sprite: entry.sprite,
-        ability,
-        item,
-        sp: toStatPoints(top("stat_points")),
-        moves,
-      };
-    }),
-  );
+  const entry = ranking.find((entry) => entry.showdownId === statsId);
+  if (!entry) return null;
+  return buildOpponent(format, entry, stone);
 }

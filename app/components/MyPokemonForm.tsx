@@ -1,7 +1,7 @@
 import { Generations, toID, type StatID } from "@smogon/calc";
 
+import { fieldClass, PokemonPicker } from "~/components/PokemonPicker";
 import { SearchSelect } from "~/components/SearchSelect";
-import { usePokemonSearch } from "~/hooks/usePokemonSearch";
 import { toKoName } from "~/lib/names";
 import type { PokemonInput } from "~/types/damage";
 
@@ -56,15 +56,10 @@ interface Props {
   onChange: (value: PokemonInput) => void;
 }
 
-const fieldClass =
-  "rounded border border-gray-300 bg-transparent px-2 py-1 dark:border-gray-700";
-
 export function MyPokemonForm({ value, onChange }: Props) {
-  const { query, setQuery, results } = usePokemonSearch();
   const remaining = SP_MAX_TOTAL - spTotal(value?.sp);
 
   function selectPokemon(name: string) {
-    setQuery("");
     onChange({ name, ability: abilitiesOf(name)[0], sp: {} });
   }
 
@@ -79,31 +74,12 @@ export function MyPokemonForm({ value, onChange }: Props) {
 
   return (
     <section className="space-y-3 rounded border border-gray-200 p-4 dark:border-gray-800">
-      <div className="relative">
-        <input
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder={
-            value ? toKoName("pokemon", value.name) : "내 포켓몬 검색 (예: ㅎㅋㄹ)"
-          }
-          className={`${fieldClass} w-full`}
-        />
-        {results.length > 0 && (
-          <ul className="absolute z-10 mt-1 max-h-64 w-full overflow-y-auto rounded border border-gray-300 bg-white text-sm shadow dark:border-gray-700 dark:bg-gray-900">
-            {results.map((result) => (
-              <li key={result.id}>
-                <button
-                  type="button"
-                  onClick={() => selectPokemon(result.name)}
-                  className="w-full px-2 py-1 text-left hover:bg-gray-100 dark:hover:bg-gray-800"
-                >
-                  {result.koName}
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+      <PokemonPicker
+        onSelect={selectPokemon}
+        placeholder={
+          value ? toKoName("pokemon", value.name) : "내 포켓몬 검색 (예: ㅎㅋㄹ)"
+        }
+      />
 
       {value && (
         <>

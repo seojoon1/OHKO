@@ -8,8 +8,10 @@ import {
   type OpponentMode,
   OpponentModeTabs,
 } from "~/components/OpponentModeTabs";
+import { SampleOpponents } from "~/components/SampleOpponents";
 import { SurvivalTable } from "~/components/SurvivalTable";
 import { WeatherSelect } from "~/components/WeatherSelect";
+import { useSampleOpponents } from "~/hooks/useSampleOpponents";
 import { toFormat } from "~/lib/champions.server";
 import { getOpponents } from "~/lib/opponents.server";
 import type { PokemonInput, Weather } from "~/types/damage";
@@ -31,8 +33,11 @@ export default function Home({ loaderData }: Route.ComponentProps) {
   const [mode, setMode] = useState<OpponentMode>("top");
   const [weather, setWeather] = useState<Weather>();
 
-  // 모드별 상대 목록. 자동 샘플/사용자 지정은 다음 작업에서 채운다.
-  const modeOpponents = mode === "top" ? opponents : [];
+  const sample = useSampleOpponents(format);
+
+  // 모드별 상대 목록. 사용자 지정은 다음 작업에서 채운다.
+  const modeOpponents =
+    mode === "top" ? opponents : mode === "sample" ? sample.opponents : [];
 
   return (
     <main className="mx-auto max-w-7xl p-4">
@@ -57,6 +62,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 
         <section className="space-y-3">
           <OpponentModeTabs value={mode} onChange={setMode} />
+          {mode === "sample" && <SampleOpponents sample={sample} />}
           <div className="flex justify-end">
             <WeatherSelect value={weather} onChange={setWeather} />
           </div>
