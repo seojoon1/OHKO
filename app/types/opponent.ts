@@ -3,6 +3,8 @@ import type { StatsTable } from "@smogon/calc";
 export interface OpponentMove {
   name: string;
   koName: string;
+  /** 이 기술을 쓸 때의 성격 (기술의 공격 능력치를 깎지 않는 통계 상위 성격) */
+  nature?: string;
 }
 
 /** 사용률 상위 포켓몬의 대표 세팅 (각 항목 1위) */
@@ -13,7 +15,6 @@ export interface OpponentSet {
   name: string;
   koName: string;
   sprite: string;
-  nature?: string;
   ability?: string;
   item?: string;
   /** 능력 포인트 */

@@ -12,9 +12,22 @@ const gen = Generations.get(0);
 
 const MOVE_COUNT = 4;
 
+function moveCategory(name: string) {
+  return gen.moves.get(toID(name) as never)?.category;
+}
+
 function isAttackMove(name: string) {
-  const category = gen.moves.get(toID(name) as never)?.category;
+  const category = moveCategory(name);
   return category === "Physical" || category === "Special";
+}
+
+// 성격은 기술마다 고른다. 통계 순위대로 보되, 그 기술의 공격 능력치를 깎는 성격은 건너뛴다.
+// (성격과 능력 포인트가 따로 집계돼서 1위끼리 묶으면 "겁쟁이 + 지진" 같은 조합이 나온다.)
+function natureFor(move: string, natures: BattleRow[]) {
+  const lowered = moveCategory(move) === "Physical" ? "Attack" : "Sp. Atk";
+  return (
+    natures.find((row) => row.stat_down !== lowered)?.name ?? natures[0]?.name
+  );
 }
 
 // 1위 도구가 메가스톤이면 메가 폼 이름을 돌려준다 (Garchomp + Garchompite Z → Garchomp-Mega-Z)
@@ -57,18 +70,26 @@ export async function getOpponents(
         ? gen.species.get(toID(mega) as never)?.abilities?.[0]
         : top("ability")?.name;
 
-      const moves = rows
-        .filter((row) => row.category === "move" && isAttackMove(row.name))
-        .sort((a, b) => a.rank - b.rank)
+      const byRank = (category: BattleRow["category"]) =>
+        rows
+          .filter((row) => row.category === category)
+          .sort((a, b) => a.rank - b.rank);
+      const natures = byRank("stat_alignment");
+
+      const moves = byRank("move")
+        .filter((row) => isAttackMove(row.name))
         .slice(0, MOVE_COUNT)
-        .map((row) => ({ name: row.name, koName: toKoName("move", row.name) }));
+        .map((row) => ({
+          name: row.name,
+          koName: toKoName("move", row.name),
+          nature: natureFor(row.name, natures),
+        }));
 
       return {
         position: entry.position,
         name,
         koName: toKoName("pokemon", name),
         sprite: entry.sprite,
-        nature: top("stat_alignment")?.name,
         ability,
         item,
         sp: toStatPoints(top("stat_points")),
