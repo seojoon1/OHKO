@@ -2,7 +2,9 @@ import { useState } from "react";
 import { Link } from "react-router";
 
 import type { Route } from "./+types/home";
+import { FormatToggle } from "~/components/FormatToggle";
 import { MyPokemonForm } from "~/components/MyPokemonForm";
+import { SurvivalTable } from "~/components/SurvivalTable";
 import { toFormat } from "~/lib/champions.server";
 import { getOpponents } from "~/lib/opponents.server";
 import type { PokemonInput } from "~/types/damage";
@@ -19,32 +21,37 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export default function Home({ loaderData }: Route.ComponentProps) {
-  const { opponents } = loaderData;
+  const { format, opponents } = loaderData;
   const [myPokemon, setMyPokemon] = useState<PokemonInput | null>(null);
 
   return (
     <main className="mx-auto max-w-4xl p-4">
       <div className="mb-4 flex items-center justify-between">
         <h1 className="text-2xl font-bold">OHKO</h1>
-        <Link to="/ranking" className="text-sm text-blue-600">
-          사용률 순위 →
-        </Link>
+        <div className="flex items-center gap-4">
+          <Link to={`/ranking?format=${format}`} className="text-sm text-blue-600">
+            사용률 순위
+          </Link>
+          <FormatToggle format={format} />
+        </div>
       </div>
 
       <MyPokemonForm value={myPokemon} onChange={setMyPokemon} />
 
-      <h2 className="mt-6 mb-2 font-semibold">상위 {OPPONENT_COUNT}마리 세팅</h2>
-      <ol className="text-sm">
-        {opponents.map((opponent) => (
-          <li
-            key={opponent.name}
-            className="border-b border-gray-100 py-1 dark:border-gray-800"
-          >
-            {opponent.position}. {opponent.koName} –{" "}
-            {opponent.moves.map((move) => move.koName).join(", ")}
-          </li>
-        ))}
-      </ol>
+      <h2 className="mt-6 mb-2 font-semibold">
+        사용률 상위 {OPPONENT_COUNT}마리의 공격을 버틸 수 있을까?
+      </h2>
+      {myPokemon ? (
+        <SurvivalTable
+          myPokemon={myPokemon}
+          opponents={opponents}
+          format={format}
+        />
+      ) : (
+        <p className="text-sm text-gray-500">
+          내 포켓몬을 고르면 상위권 포켓몬의 주력 기술 4개를 버티는지 계산합니다.
+        </p>
+      )}
     </main>
   );
 }

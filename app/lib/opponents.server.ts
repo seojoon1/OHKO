@@ -4,6 +4,7 @@
 import { Generations, toID } from "@smogon/calc";
 
 import { getBattle, getRanking } from "~/lib/champions.server";
+import { toMega } from "~/lib/mega";
 import { toKoName } from "~/lib/names";
 import type { BattleFormat, BattleRow } from "~/types/champions";
 import type { OpponentSet } from "~/types/opponent";
@@ -28,12 +29,6 @@ function natureFor(move: string, natures: BattleRow[]) {
   return (
     natures.find((row) => row.stat_down !== lowered)?.name ?? natures[0]?.name
   );
-}
-
-// 1위 도구가 메가스톤이면 메가 폼 이름을 돌려준다 (Garchomp + Garchompite Z → Garchomp-Mega-Z)
-function megaForm(species: string, item?: string) {
-  if (!item) return undefined;
-  return gen.items.get(toID(item) as never)?.megaStone?.[species as never];
 }
 
 function toStatPoints(row?: BattleRow) {
@@ -63,12 +58,8 @@ export async function getOpponents(
       const species =
         gen.species.get(toID(entry.showdownId) as never)?.name ?? entry.name;
       const item = top("held_item")?.name;
-      const mega = megaForm(species, item);
-      const name = mega ?? species;
-      // 통계의 특성은 메가진화 전 특성이다. 메가 폼은 특성이 하나로 정해져 있다.
-      const ability = mega
-        ? gen.species.get(toID(mega) as never)?.abilities?.[0]
-        : top("ability")?.name;
+      // 통계의 특성은 메가진화 전 특성이라 메가 폼이면 바뀐다.
+      const { name, ability } = toMega(species, item, top("ability")?.name);
 
       const byRank = (category: BattleRow["category"]) =>
         rows
