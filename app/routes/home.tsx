@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 
 import type { Route } from "./+types/home";
+import { FormatToggle } from "~/components/FormatToggle";
 import { getRanking, toFormat } from "~/lib/champions.server";
 
 export function meta({}: Route.MetaArgs) {
@@ -17,7 +18,10 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 
   return (
     <main className="mx-auto max-w-4xl p-4">
-      <h1 className="mb-4 text-2xl font-bold">{format} 사용률 순위</h1>
+      <div className="mb-4 flex items-center justify-between">
+        <h1 className="text-2xl font-bold">사용률 순위</h1>
+        <FormatToggle format={format} />
+      </div>
 
       <table className="w-full text-left text-sm">
         <thead className="border-b border-gray-300 dark:border-gray-700">

@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 
 import type { Route } from "./+types/pokemon";
+import { FormatToggle } from "~/components/FormatToggle";
 import { getBattle, toFormat } from "~/lib/champions.server";
 import type { BattleCategory, BattleRow } from "~/types/champions";
 
@@ -55,9 +56,10 @@ export default function Pokemon({ loaderData }: Route.ComponentProps) {
       <Link to={`/?format=${format}`} className="text-sm text-blue-600">
         ← 순위로
       </Link>
-      <h1 className="my-4 text-2xl font-bold">
-        {pokemon} ({format})
-      </h1>
+      <div className="my-4 flex items-center justify-between">
+        <h1 className="text-2xl font-bold">{pokemon}</h1>
+        <FormatToggle format={format} />
+      </div>
 
       <div className="grid gap-6 sm:grid-cols-2">
         {SECTIONS.map(({ category, title }) => (
