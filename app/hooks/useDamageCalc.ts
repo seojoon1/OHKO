@@ -15,7 +15,8 @@ import type {
   PokemonInput,
 } from "~/types/damage";
 
-const gen = Generations.get(9);
+// 0 = 포켓몬 챔피언스
+const gen = Generations.get(0);
 
 function toPokemon({ name, ...options }: PokemonInput) {
   return new Pokemon(gen, name, options);
