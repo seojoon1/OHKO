@@ -35,9 +35,16 @@ interface Props {
   myPokemon: PokemonInput;
   opponents: OpponentSet[];
   format: BattleFormat;
+  /** 모든 상대에게 적용할 날씨. 없으면 상대의 날씨 특성을 따른다. */
+  weather?: Weather;
 }
 
-export function SurvivalTable({ myPokemon, opponents, format }: Props) {
+export function SurvivalTable({
+  myPokemon,
+  opponents,
+  format,
+  weather,
+}: Props) {
   const defender = {
     ...myPokemon,
     ...toMega(myPokemon.name, myPokemon.item, myPokemon.ability),
@@ -57,9 +64,12 @@ export function SurvivalTable({ myPokemon, opponents, format }: Props) {
         move: { name: move.name },
         field: {
           format,
-          weather: opponent.ability
-            ? WEATHER_BY_ABILITY[opponent.ability]
-            : undefined,
+          // 고른 날씨가 없으면 상대의 날씨 특성을 따른다.
+          weather:
+            weather ??
+            (opponent.ability
+              ? WEATHER_BY_ABILITY[opponent.ability]
+              : undefined),
         },
       });
       const judgement = result
