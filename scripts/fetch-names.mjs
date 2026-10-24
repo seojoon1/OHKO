@@ -248,9 +248,15 @@ function sortKeys(obj) {
   );
 }
 
+// @smogon/calc 에는 없지만 통계 API가 쓰는 ID (Showdown ID → 한글)
+// 통계 API는 폼을 오가는 킬가르도를 기본 ID 하나로 집계한다.
+const EXTRA_POKEMON_KO = {
+  aegislash: "킬가르도",
+};
+
 // ── 실행 ─────────────────────────────────────────────────────────────
 const TARGETS = [
-  ["pokemon", [...gen.species], "pokemon", pokemonKo],
+  ["pokemon", [...gen.species], "pokemon", pokemonKo, EXTRA_POKEMON_KO],
   ["moves", [...gen.moves], "move", simpleKo("move")],
   ["items", [...gen.items], "item", simpleKo("item")],
   ["abilities", [...gen.abilities], "ability", simpleKo("ability")],
@@ -259,7 +265,7 @@ const TARGETS = [
 
 await mkdir(DATA_DIR, { recursive: true });
 
-for (const [file, entries, endpoint, resolveKo] of TARGETS) {
+for (const [file, entries, endpoint, resolveKo, extra = {}] of TARGETS) {
   const { names, unmatched, noKo } = await collect(
     entries,
     endpoint,
@@ -267,7 +273,7 @@ for (const [file, entries, endpoint, resolveKo] of TARGETS) {
   );
   await writeFile(
     path.join(DATA_DIR, `${file}.json`),
-    JSON.stringify(names, null, 2) + "\n",
+    JSON.stringify(sortKeys({ ...names, ...extra }), null, 2) + "\n",
   );
 
   console.log(

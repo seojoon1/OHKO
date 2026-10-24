@@ -34,6 +34,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {children}
+        <footer className="mx-auto max-w-4xl p-4 text-xs text-gray-500">
+          Battle data provided by{" "}
+          <a
+            href="https://championsbattledata.com/"
+            target="_blank"
+            rel="noreferrer"
+            className="underline"
+          >
+            Pokémon Champions Battle Data
+          </a>
+        </footer>
         <ScrollRestoration />
         <Scripts />
       </body>
