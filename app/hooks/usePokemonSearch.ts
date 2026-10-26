@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
-import { Generations } from "@smogon/calc";
 
 import pokemonKo from "../../data/pokemon.json";
+import { findSpecies } from "~/lib/championsData";
 import { chosungIncludes } from "~/lib/hangul";
 
 export interface PokemonSearchResult {
@@ -13,12 +13,10 @@ export interface PokemonSearchResult {
   koName: string;
 }
 
-const gen = Generations.get(0);
-
 const ALL: PokemonSearchResult[] = Object.entries(
   pokemonKo as Record<string, string>,
 ).flatMap(([id, koName]) => {
-  const species = gen.species.get(id as never);
+  const species = findSpecies(id);
   return species ? [{ id, name: species.name, koName }] : [];
 });
 

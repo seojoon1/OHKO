@@ -1,13 +1,17 @@
-import { Generations, toID, type StatID } from "@smogon/calc";
+import type { StatID } from "@smogon/calc";
 
 import { MoveSlots } from "~/components/MoveSlots";
 import { fieldClass, PokemonPicker } from "~/components/PokemonPicker";
 import { RankControl } from "~/components/RankControl";
 import { SearchSelect } from "~/components/SearchSelect";
+import {
+  ABILITIES as ABILITY_NAMES,
+  findSpecies,
+  ITEMS as ITEM_DATA,
+  NATURES as NATURE_DATA,
+} from "~/lib/championsData";
 import { toKoName } from "~/lib/names";
 import type { PokemonInput } from "~/types/damage";
-
-const gen = Generations.get(0);
 
 // 챔피언스 능력 포인트 규칙
 export const SP_MAX_PER_STAT = 32;
@@ -30,7 +34,7 @@ const STAT_KO: Record<string, string> = {
   spe: "스피드",
 };
 
-const NATURES = [...gen.natures]
+const NATURES = NATURE_DATA
   .map((nature) => ({
     value: nature.name,
     label:
@@ -41,20 +45,19 @@ const NATURES = [...gen.natures]
   .sort((a, b) => a.label.localeCompare(b.label, "ko"));
 
 // @smogon/calc 의 챔피언스 데이터는 포켓몬마다 첫 특성만 갖고 있어서, 전체 특성에서 고른다.
-const ABILITIES = [...gen.abilities]
-  .map((ability) => ({
-    value: ability.name,
-    label: toKoName("ability", ability.name),
-  }))
+const ABILITIES = ABILITY_NAMES.map((name) => ({
+  value: name,
+  label: toKoName("ability", name),
+}))
   .sort((a, b) => a.label.localeCompare(b.label, "ko"));
 
-const ITEMS = [...gen.items]
+const ITEMS = ITEM_DATA
   .map((item) => ({ value: item.name, label: toKoName("item", item.name) }))
   .sort((a, b) => a.label.localeCompare(b.label, "ko"));
 
-function abilitiesOf(name: string) {
-  const species = gen.species.get(toID(name) as never);
-  return Object.values(species?.abilities ?? {}).filter(Boolean);
+// 포켓몬의 기본 특성 (데이터에는 첫 특성만 있다)
+function defaultAbility(name: string) {
+  return findSpecies(name)?.ability ?? undefined;
 }
 
 function spTotal(sp: PokemonInput["sp"] = {}) {
@@ -81,7 +84,7 @@ export function MyPokemonForm({
 
   // 포켓몬을 바꿔도 입력해 둔 성격/도구/포인트는 두고, 특성만 그 포켓몬의 기본 특성으로 바꾼다.
   function selectPokemon(name: string) {
-    onChange({ ...draft, name, ability: abilitiesOf(name)[0] });
+    onChange({ ...draft, name, ability: defaultAbility(name) });
   }
 
   function setStat(stat: StatID, raw: number) {
