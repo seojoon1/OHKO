@@ -81,7 +81,7 @@ export default function Pokemon({ loaderData }: Route.ComponentProps) {
 
   return (
     <main className="mx-auto max-w-4xl p-4">
-      <Link to={`/?format=${format}`} className="text-sm text-blue-600">
+      <Link to={`/ranking?format=${format}`} className="text-sm text-blue-600">
         ← 순위로
       </Link>
       <div className="my-4 flex items-center justify-between">

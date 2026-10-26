@@ -1,5 +1,7 @@
 import type { StatsTable } from "@smogon/calc";
 
+import type { BattleFormat } from "~/types/champions";
+
 export type Weather = "Sand" | "Sun" | "Rain" | "Snow";
 
 export type Terrain = "Electric" | "Grassy" | "Psychic" | "Misty";
@@ -20,6 +22,8 @@ export interface MoveInput {
 }
 
 export interface FieldInput {
+  /** 기본 싱글. 더블이면 범위기 위력이 0.75배 */
+  format?: BattleFormat;
   weather?: Weather;
   terrain?: Terrain;
   isReflect?: boolean;
@@ -36,6 +40,8 @@ export interface DamageCalcInput {
 export interface DamageCalcResult {
   range: [number, number];
   percent: [number, number];
+  /** 확정/난수 n타. chance 는 n타로 쓰러뜨릴 확률(0~1), 확정이면 1. 데미지 0이면 n = 0 */
+  ko: { n: number; chance?: number };
   koChance: string;
   desc: string;
 }
