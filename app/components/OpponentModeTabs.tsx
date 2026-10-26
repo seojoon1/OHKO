@@ -15,7 +15,7 @@ export function OpponentModeTabs({ value, onChange }: Props) {
   return (
     <div
       role="tablist"
-      className="flex border-b border-gray-200 text-sm dark:border-gray-800"
+      className="flex border-b border-gray-200 text-sm"
     >
       {TABS.map((tab) => (
         <button
@@ -26,8 +26,8 @@ export function OpponentModeTabs({ value, onChange }: Props) {
           onClick={() => onChange(tab.mode)}
           className={
             tab.mode === value
-              ? "-mb-px border-b-2 border-gray-900 px-4 py-2 font-semibold dark:border-gray-100"
-              : "px-4 py-2 text-gray-500 hover:text-gray-900 dark:hover:text-gray-100"
+              ? "-mb-px border-b-2 border-accent px-4 py-2 font-semibold text-ink"
+              : "px-4 py-2 text-gray-500 hover:text-ink"
           }
         >
           {tab.label}

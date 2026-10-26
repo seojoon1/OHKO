@@ -87,7 +87,7 @@ export function MyPokemonForm({
   }
 
   return (
-    <section className="space-y-3 rounded border border-gray-200 p-4 dark:border-gray-800">
+    <section className="space-y-3 rounded border border-gray-200 p-4">
       <PokemonPicker
         onSelect={selectPokemon}
         placeholder={

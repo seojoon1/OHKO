@@ -58,7 +58,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
         <div className="flex items-center gap-4">
           <Link
             to={`/ranking?format=${format}`}
-            className="text-sm text-blue-600"
+            className="text-sm text-ink underline decoration-accent decoration-2 underline-offset-4"
           >
             사용률 순위
           </Link>

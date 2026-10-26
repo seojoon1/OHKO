@@ -72,7 +72,7 @@ export function CustomOpponents({ value, onChange }: Props) {
               onClick={() =>
                 onChange(value.filter((item) => item.id !== custom.id))
               }
-              className="text-sm text-gray-500 hover:text-gray-900 dark:hover:text-gray-100"
+              className="text-sm text-gray-500 hover:text-ink"
             >
               상대 빼기 ×
             </button>
@@ -110,7 +110,7 @@ export function CustomOpponents({ value, onChange }: Props) {
       <button
         type="button"
         onClick={() => onChange([...value, emptyCustomOpponent(nextId)])}
-        className="w-full rounded border border-dashed border-gray-300 py-2 text-sm text-gray-500 hover:text-gray-900 dark:border-gray-700 dark:hover:text-gray-100"
+        className="w-full rounded border border-dashed border-gray-300 py-2 text-sm text-gray-500 hover:text-ink"
       >
         + 상대 추가
       </button>

@@ -81,7 +81,7 @@ export default function Pokemon({ loaderData }: Route.ComponentProps) {
 
   return (
     <main className="mx-auto max-w-4xl p-4">
-      <Link to={`/ranking?format=${format}`} className="text-sm text-blue-600">
+      <Link to={`/ranking?format=${format}`} className="text-sm text-ink underline decoration-accent decoration-2 underline-offset-4">
         ← 순위로
       </Link>
       <div className="my-4 flex items-center justify-between">
@@ -99,7 +99,7 @@ export default function Pokemon({ loaderData }: Route.ComponentProps) {
                 .map((row) => (
                   <li
                     key={row.rank}
-                    className="flex justify-between border-b border-gray-100 py-1 dark:border-gray-800"
+                    className="flex justify-between border-b border-gray-100 py-1"
                   >
                     <span>
                       {row.rank}. {rowLabel(row)}

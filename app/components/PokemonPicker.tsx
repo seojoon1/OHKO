@@ -1,7 +1,7 @@
 import { usePokemonSearch } from "~/hooks/usePokemonSearch";
 
 export const fieldClass =
-  "rounded border border-gray-300 bg-transparent px-2 py-1 dark:border-gray-700";
+  "rounded border border-gray-300 bg-transparent px-2 py-1";
 
 interface Props {
   /** Showdown 이름 ("Garchomp") */
@@ -22,7 +22,7 @@ export function PokemonPicker({ onSelect, placeholder }: Props) {
         className={`${fieldClass} w-full`}
       />
       {results.length > 0 && (
-        <ul className="absolute z-10 mt-1 max-h-64 w-full overflow-y-auto rounded border border-gray-300 bg-white text-sm shadow dark:border-gray-700 dark:bg-gray-900">
+        <ul className="absolute z-10 mt-1 max-h-64 w-full overflow-y-auto rounded border border-gray-300 bg-white text-sm shadow">
           {results.map((result) => (
             <li key={result.id}>
               <button
@@ -31,7 +31,7 @@ export function PokemonPicker({ onSelect, placeholder }: Props) {
                   setQuery("");
                   onSelect(result.name);
                 }}
-                className="w-full px-2 py-1 text-left hover:bg-gray-100 dark:hover:bg-gray-800"
+                className="w-full px-2 py-1 text-left hover:bg-accent-soft"
               >
                 {result.koName}
               </button>
