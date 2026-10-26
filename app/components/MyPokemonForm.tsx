@@ -59,6 +59,9 @@ function spTotal(sp: PokemonInput["sp"] = {}) {
   return Object.values(sp).reduce((sum, value) => sum + (value ?? 0), 0);
 }
 
+// 포켓몬을 고르기 전에도 성격/특성/도구/포인트를 먼저 입력할 수 있다. 이때 name 은 "".
+export const EMPTY_POKEMON: PokemonInput = { name: "", sp: {} };
+
 interface Props {
   value: PokemonInput | null;
   onChange: (value: PokemonInput) => void;
@@ -71,93 +74,90 @@ export function MyPokemonForm({
   onChange,
   placeholder = "내 포켓몬 검색 (예: ㅎㅋㄹ)",
 }: Props) {
-  const remaining = SP_MAX_TOTAL - spTotal(value?.sp);
+  const draft = value ?? EMPTY_POKEMON;
+  const remaining = SP_MAX_TOTAL - spTotal(draft.sp);
 
+  // 포켓몬을 바꿔도 입력해 둔 성격/도구/포인트는 두고, 특성만 그 포켓몬의 기본 특성으로 바꾼다.
   function selectPokemon(name: string) {
-    onChange({ name, ability: abilitiesOf(name)[0], sp: {} });
+    onChange({ ...draft, name, ability: abilitiesOf(name)[0] });
   }
 
   function setStat(stat: StatID, raw: number) {
-    if (!value) return;
-    const current = value.sp?.[stat] ?? 0;
+    const current = draft.sp?.[stat] ?? 0;
     // 능력치당 32, 합계 66을 넘지 않게 자른다.
     const limit = Math.min(SP_MAX_PER_STAT, current + remaining);
     const next = Math.max(0, Math.min(limit, Math.floor(raw) || 0));
-    onChange({ ...value, sp: { ...value.sp, [stat]: next } });
+    onChange({ ...draft, sp: { ...draft.sp, [stat]: next } });
   }
 
   return (
-    <section className="space-y-3 rounded border border-gray-200 p-4 dark:border-gray-800">
+    <section className="space-y-3 rounded border border-gray-200 p-4">
       <PokemonPicker
         onSelect={selectPokemon}
         placeholder={
-          value ? toKoName("pokemon", value.name) : placeholder
+          draft.name ? toKoName("pokemon", draft.name) : placeholder
         }
       />
 
-      {value && (
-        <>
-          <div className="grid gap-2 text-sm sm:grid-cols-3">
-            <div className="flex flex-col gap-1">
-              성격
-              <SearchSelect
-                options={NATURES}
-                value={value.nature}
-                onChange={(nature) => onChange({ ...value, nature })}
-                emptyLabel="선택 안 함"
-                className={fieldClass}
-              />
-            </div>
+      <div className="grid gap-2 text-sm sm:grid-cols-3">
+        <div className="flex flex-col gap-1">
+          성격
+          <SearchSelect
+            options={NATURES}
+            value={draft.nature}
+            onChange={(nature) => onChange({ ...draft, nature })}
+            emptyLabel="선택 안 함"
+            className={fieldClass}
+          />
+        </div>
 
-            <div className="flex flex-col gap-1">
-              특성
-              <SearchSelect
-                options={ABILITIES}
-                value={value.ability}
-                onChange={(ability) => onChange({ ...value, ability })}
-                className={fieldClass}
-              />
-            </div>
+        <div className="flex flex-col gap-1">
+          특성
+          <SearchSelect
+            options={ABILITIES}
+            value={draft.ability}
+            onChange={(ability) => onChange({ ...draft, ability })}
+            className={fieldClass}
+          />
+        </div>
 
-            <div className="flex flex-col gap-1">
-              도구
-              <SearchSelect
-                options={ITEMS}
-                value={value.item}
-                onChange={(item) => onChange({ ...value, item })}
-                emptyLabel="없음"
-                className={fieldClass}
-              />
-            </div>
-          </div>
+        <div className="flex flex-col gap-1">
+          도구
+          <SearchSelect
+            options={ITEMS}
+            value={draft.item}
+            onChange={(item) => onChange({ ...draft, item })}
+            emptyLabel="없음"
+            className={fieldClass}
+          />
+        </div>
+      </div>
 
-          <div className="text-sm">
-            <div className="mb-1 flex justify-between">
-              <span>능력 포인트</span>
-              <span className="text-gray-500">
-                남은 포인트 {remaining} / {SP_MAX_TOTAL}
-              </span>
-            </div>
-            <div className="grid grid-cols-6 gap-2">
-              {STATS.map((stat) => (
-                <label key={stat.id} className="flex flex-col gap-1">
-                  {stat.label}
-                  <input
-                    type="number"
-                    min={0}
-                    max={SP_MAX_PER_STAT}
-                    value={value.sp?.[stat.id] ?? 0}
-                    onChange={(event) =>
-                      setStat(stat.id, Number(event.target.value))
-                    }
-                    className={`${fieldClass} w-full`}
-                  />
-                </label>
-              ))}
-            </div>
-          </div>
-        </>
-      )}
+      <div className="text-sm">
+        <div className="mb-1 flex justify-between">
+          <span>능력 포인트</span>
+          <span className="text-gray-500">
+            남은 포인트 {remaining} / {SP_MAX_TOTAL}
+          </span>
+        </div>
+        <div className="grid grid-cols-6 gap-2">
+          {STATS.map((stat) => (
+            <label key={stat.id} className="flex flex-col gap-1">
+              {stat.label}
+              <input
+                type="number"
+                min={0}
+                max={SP_MAX_PER_STAT}
+                value={draft.sp?.[stat.id] ?? 0}
+                onChange={(event) =>
+                  setStat(stat.id, Number(event.target.value))
+                }
+                className={`${fieldClass} w-full`}
+              />
+            </label>
+          ))}
+        </div>
+      </div>
     </section>
   );
 }

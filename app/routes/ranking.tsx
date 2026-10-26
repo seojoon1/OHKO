@@ -33,7 +33,7 @@ export default function Ranking({ loaderData }: Route.ComponentProps) {
       </div>
 
       <table className="w-full text-left text-sm">
-        <thead className="border-b border-gray-300 dark:border-gray-700">
+        <thead className="border-b border-gray-300">
           <tr>
             <th className="py-2 pr-2">순위</th>
             <th className="py-2 pr-2">포켓몬</th>
@@ -47,7 +47,7 @@ export default function Ranking({ loaderData }: Route.ComponentProps) {
           {ranking.map((entry) => (
             <tr
               key={entry.showdownId}
-              className="border-b border-gray-100 dark:border-gray-800"
+              className="border-b border-gray-100"
             >
               <td className="py-1 pr-2">{entry.position}</td>
               <td className="py-1 pr-2">

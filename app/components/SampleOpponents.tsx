@@ -21,7 +21,7 @@ export function SampleOpponents({ sample }: Props) {
             return (
               <li
                 key={name}
-                className="flex items-center gap-1 rounded border border-gray-300 px-2 py-0.5 dark:border-gray-700"
+                className="flex items-center gap-1 rounded border border-gray-300 px-2 py-0.5"
               >
                 <span>{toKoName("pokemon", name)}</span>
                 {entry?.status === "loading" && (
@@ -34,7 +34,7 @@ export function SampleOpponents({ sample }: Props) {
                   type="button"
                   onClick={() => sample.remove(name)}
                   aria-label={`${toKoName("pokemon", name)} 빼기`}
-                  className="text-gray-500 hover:text-gray-900 dark:hover:text-gray-100"
+                  className="text-gray-500 hover:text-ink"
                 >
                   ×
                 </button>

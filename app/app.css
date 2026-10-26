@@ -3,13 +3,71 @@
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  /* 흰 배경 + 검정/노랑 포인트 */
+  --color-ink: #111111;
+  --color-accent: #facc15;
+  --color-accent-soft: #fef9c3;
 }
 
-html,
+/* 시스템 다크 모드와 상관없이 항상 라이트 테마.
+   흰 배경은 html 에만 둔다. body 에 칠하면 뒤에 깔린 날씨 배경(-z-10)을 덮는다. */
+html {
+  @apply bg-white;
+  color-scheme: light;
+}
 body {
-  @apply bg-white dark:bg-gray-950;
+  @apply text-ink;
+}
 
-  @media (prefers-color-scheme: dark) {
-    color-scheme: dark;
+/* ── 날씨 배경 ───────────────────────────────────────────────
+   WeatherBackground 가 날씨마다 색 층을 하나씩 깔고, 고른 날씨만 opacity 1 로 보인다.
+   움직이는 입자(비/눈/모래/빛)는 tsParticles 가 그린다 (weatherParticles.ts). */
+.weather-layer {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 900ms ease;
+}
+.weather-layer[data-active="true"] {
+  opacity: 1;
+}
+
+/* 입자 층은 카드 위를 지나가므로 글자를 가리지 않게 살짝 투명하게 둔다.
+   날씨를 바꾸면 새 입자 층이 서서히 나타난다. */
+.weather-particles {
+  opacity: 0.85;
+  animation: weather-fade-in 900ms ease both;
+}
+.weather-particles canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+@keyframes weather-fade-in {
+  from { opacity: 0; }
+  to { opacity: 0.85; }
+}
+
+.weather-sun {
+  background:
+    radial-gradient(circle at 85% 10%, rgb(255 255 255 / 0.95) 0, rgb(255 236 150 / 0.7) 10%, transparent 35%),
+    linear-gradient(160deg, #fff7d1 0%, #ffe08a 45%, #ffb867 100%);
+}
+.weather-rain {
+  background: linear-gradient(180deg, #c9d6e3 0%, #9fb3c8 60%, #7f95ad 100%);
+}
+.weather-sand {
+  background: linear-gradient(170deg, #f6e7c1 0%, #e8cf96 50%, #d4b072 100%);
+}
+.weather-snow {
+  background: linear-gradient(180deg, #eaf4fb 0%, #d6e9f6 60%, #c3dcef 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .weather-layer {
+    transition: none;
+  }
+  .weather-particles {
+    animation: none;
   }
 }

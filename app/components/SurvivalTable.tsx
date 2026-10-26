@@ -15,9 +15,9 @@ const WEATHER_BY_ABILITY: Record<string, Weather> = {
 type Verdict = "survive" | "roll" | "ohko" | "immune";
 
 const VERDICT_STYLE: Record<Verdict, string> = {
-  survive: "text-green-600 dark:text-green-400",
-  roll: "text-orange-600 dark:text-orange-400",
-  ohko: "text-red-600 dark:text-red-400",
+  survive: "text-green-600",
+  roll: "text-orange-600",
+  ohko: "text-red-600",
   immune: "text-gray-400",
 };
 
@@ -99,7 +99,7 @@ export function SurvivalTable({
       </p>
 
       <table className="w-full text-left text-sm">
-        <thead className="border-b border-gray-300 dark:border-gray-700">
+        <thead className="border-b border-gray-300">
           <tr>
             <th className="py-2 pr-2">상대</th>
             <th className="py-2 pr-2">기술</th>
@@ -113,7 +113,7 @@ export function SurvivalTable({
               key={key}
               className={
                 index === opponent.moves.length - 1
-                  ? "border-b border-gray-200 dark:border-gray-800"
+                  ? "border-b border-gray-200"
                   : ""
               }
             >

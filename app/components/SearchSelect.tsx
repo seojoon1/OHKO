@@ -59,14 +59,14 @@ export function SearchSelect({
         className={`w-full ${className}`}
       />
       {open && (
-        <ul className="absolute z-10 mt-1 max-h-64 w-full overflow-y-auto rounded border border-gray-300 bg-white text-sm shadow dark:border-gray-700 dark:bg-gray-900">
+        <ul className="absolute z-10 mt-1 max-h-64 w-full overflow-y-auto rounded border border-gray-300 bg-white text-sm shadow">
           {emptyLabel && (
             <li>
               <button
                 type="button"
                 onMouseDown={(event) => event.preventDefault()}
                 onClick={() => select(undefined)}
-                className="w-full px-2 py-1 text-left text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800"
+                className="w-full px-2 py-1 text-left text-gray-500 hover:bg-accent-soft"
               >
                 {emptyLabel}
               </button>
@@ -78,7 +78,7 @@ export function SearchSelect({
                 type="button"
                 onMouseDown={(event) => event.preventDefault()}
                 onClick={() => select(option.value)}
-                className="w-full px-2 py-1 text-left hover:bg-gray-100 dark:hover:bg-gray-800"
+                className="w-full px-2 py-1 text-left hover:bg-accent-soft"
               >
                 {option.label}
               </button>

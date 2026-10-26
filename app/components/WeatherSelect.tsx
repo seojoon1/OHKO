@@ -18,7 +18,7 @@ export function WeatherSelect({ value, onChange }: Props) {
   return (
     <div className="flex items-center gap-2 text-sm">
       <span>날씨</span>
-      <div className="flex overflow-hidden rounded border border-gray-300 dark:border-gray-700">
+      <div className="flex overflow-hidden rounded border border-gray-300">
         {OPTIONS.map((option) => (
           <button
             key={option.label}
@@ -27,8 +27,8 @@ export function WeatherSelect({ value, onChange }: Props) {
             aria-pressed={option.weather === value}
             className={
               option.weather === value
-                ? "bg-gray-900 px-3 py-1 text-white dark:bg-gray-100 dark:text-gray-900"
-                : "px-3 py-1 hover:bg-gray-100 dark:hover:bg-gray-800"
+                ? "bg-accent px-3 py-1 font-semibold text-ink"
+                : "px-3 py-1 hover:bg-accent-soft"
             }
           >
             {option.label}
