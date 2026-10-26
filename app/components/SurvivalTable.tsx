@@ -1,4 +1,4 @@
-import { calcDamage } from "~/lib/damage";
+import { useCalculator } from "~/hooks/useCalculator";
 import { toMega } from "~/lib/mega";
 import {
   judge,
@@ -30,6 +30,10 @@ export function SurvivalTable({
   format,
   weather,
 }: Props) {
+  const calculator = useCalculator();
+  if (!calculator) return <p className="text-sm text-gray-500">계산 준비 중…</p>;
+  const { calcDamage } = calculator;
+
   const defender = {
     ...myPokemon,
     ...toMega(myPokemon.name, myPokemon.item, myPokemon.ability),

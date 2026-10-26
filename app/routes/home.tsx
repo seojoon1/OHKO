@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import type { Route } from "./+types/home";
 import { BulkSummary } from "~/components/BulkSummary";
@@ -21,6 +21,7 @@ import { SampleOpponents } from "~/components/SampleOpponents";
 import { SurvivalTable } from "~/components/SurvivalTable";
 import { WeatherBackground } from "~/components/WeatherBackground";
 import { WeatherSelect } from "~/components/WeatherSelect";
+import { loadCalculator } from "~/hooks/useCalculator";
 import { useSampleOpponents } from "~/hooks/useSampleOpponents";
 import { useTopOpponents } from "~/hooks/useTopOpponents";
 import { toFormat } from "~/lib/champions.server";
@@ -45,6 +46,11 @@ export default function Home({ loaderData }: Route.ComponentProps) {
   const [mode, setMode] = useState<OpponentMode>("duel");
   const [duelOpponent, setDuelOpponent] = useState<PokemonInput | null>(null);
   const [weather, setWeather] = useState<Weather>();
+
+  // 계산 라이브러리는 첫 화면에 넣지 않고, 화면이 뜬 뒤 미리 불러 둔다.
+  useEffect(() => {
+    loadCalculator();
+  }, []);
 
   const sample = useSampleOpponents(format);
   const top = useTopOpponents(format, mode === "top");
