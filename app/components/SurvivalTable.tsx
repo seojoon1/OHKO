@@ -1,37 +1,19 @@
 import { calcDamage } from "~/lib/damage";
 import { toMega } from "~/lib/mega";
+import {
+  judge,
+  type Verdict,
+  VERDICT_STYLE,
+  WEATHER_BY_ABILITY,
+} from "~/lib/verdict";
 import type { BattleFormat } from "~/types/champions";
 import type { PokemonInput, Weather } from "~/types/damage";
 import type { OpponentSet } from "~/types/opponent";
 
-// 나오자마자 날씨를 바꾸는 특성
-const WEATHER_BY_ABILITY: Record<string, Weather> = {
-  Drought: "Sun",
-  Drizzle: "Rain",
-  "Sand Stream": "Sand",
-  "Snow Warning": "Snow",
-};
-
-type Verdict = "survive" | "roll" | "ohko" | "immune";
-
-const VERDICT_STYLE: Record<Verdict, string> = {
-  survive: "text-green-600",
-  roll: "text-orange-600",
-  ohko: "text-red-600",
-  immune: "text-gray-400",
-};
-
-function judge(n: number, chance: number | undefined, maxDamage: number) {
-  if (maxDamage === 0) return { verdict: "immune" as const, label: "무효" };
-  // kochance 는 5타 이상이면 n = 0 을 준다.
-  if (n === 0) return { verdict: "survive" as const, label: "버팀 (5타 이상)" };
-  const kind = chance === undefined || chance >= 1 ? "확정" : "난수";
-  const percent = (chance ?? 0) * 100;
-  // 아주 낮은 확률이 "0%"로 반올림되지 않게 한다.
-  const chanceLabel = percent < 1 ? "1% 미만" : `${Math.round(percent)}%`;
-  const hits = `${kind} ${n}타${kind === "난수" ? ` (${chanceLabel})` : ""}`;
-  if (n >= 2) return { verdict: "survive" as const, label: `버팀 · ${hits}` };
-  return { verdict: kind === "확정" ? ("ohko" as const) : ("roll" as const), label: hits };
+// 내 포켓몬 입장의 문구: 2타 이상이면 "버팀 · 확정 2타"
+function survivalLabel(n: number, chance: number | undefined, maxDamage: number) {
+  const { verdict, hits } = judge(n, chance, maxDamage);
+  return { verdict, label: verdict === "survive" ? `버팀 · ${hits}` : hits };
 }
 
 interface Props {
@@ -76,7 +58,7 @@ export function SurvivalTable({
         },
       });
       const judgement = result
-        ? judge(result.ko.n, result.ko.chance, result.range[1])
+        ? survivalLabel(result.ko.n, result.ko.chance, result.range[1])
         : null;
       const key = `${opponentIndex}-${index}`;
       return { key, opponent, move, index, result, error, judgement };

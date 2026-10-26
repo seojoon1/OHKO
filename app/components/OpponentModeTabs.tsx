@@ -1,6 +1,7 @@
-export type OpponentMode = "top" | "sample" | "custom";
+export type OpponentMode = "duel" | "top" | "sample" | "custom";
 
 const TABS: { mode: OpponentMode; label: string }[] = [
+  { mode: "duel", label: "1대1" },
   { mode: "top", label: "상위 20위" },
   { mode: "sample", label: "자동 샘플" },
   { mode: "custom", label: "사용자 지정" },
