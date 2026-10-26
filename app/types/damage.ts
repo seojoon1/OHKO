@@ -13,6 +13,8 @@ export interface PokemonInput {
   item?: string;
   /** 능력 포인트 */
   sp?: Partial<StatsTable>;
+  /** 남은 HP (1~100%). 없으면 100% */
+  hpPercent?: number;
   boosts?: Partial<StatsTable>;
 }
 

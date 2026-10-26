@@ -10,7 +10,8 @@ import {
   toOpponentSets,
 } from "~/components/CustomOpponents";
 import { FormatToggle } from "~/components/FormatToggle";
-import { MyPokemonForm } from "~/components/MyPokemonForm";
+import { HpControl } from "~/components/HpControl";
+import { EMPTY_POKEMON, MyPokemonForm } from "~/components/MyPokemonForm";
 import {
   type OpponentMode,
   OpponentModeTabs,
@@ -76,6 +77,10 @@ export default function Home({ loaderData }: Route.ComponentProps) {
         <section className={`space-y-2 lg:sticky lg:top-4 lg:self-start ${CARD}`}>
           <h2 className="font-semibold">내 포켓몬</h2>
           <MyPokemonForm value={myPokemon} onChange={setMyPokemon} />
+          <HpControl
+            pokemon={myPokemon ?? EMPTY_POKEMON}
+            onChange={setMyPokemon}
+          />
           {myPokemon?.name && <BulkSummary pokemon={myPokemon} />}
         </section>
 
