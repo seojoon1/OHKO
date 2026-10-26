@@ -33,13 +33,19 @@ body {
   opacity: 1;
 }
 
-/* 날씨를 바꾸면 새 입자 층이 서서히 나타난다. */
+/* 입자 층은 카드 위를 지나가므로 글자를 가리지 않게 살짝 투명하게 둔다.
+   날씨를 바꾸면 새 입자 층이 서서히 나타난다. */
 .weather-particles {
+  opacity: 0.85;
   animation: weather-fade-in 900ms ease both;
+}
+.weather-particles canvas {
+  width: 100% !important;
+  height: 100% !important;
 }
 @keyframes weather-fade-in {
   from { opacity: 0; }
-  to { opacity: 1; }
+  to { opacity: 0.85; }
 }
 
 .weather-sun {

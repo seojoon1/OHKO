@@ -1,4 +1,5 @@
 // 날씨별 tsParticles 설정. 색 그라데이션은 app.css 의 .weather-* 가 맡고, 여기는 움직이는 입자만.
+// 입자는 흰 카드 위로도 지나가므로, 흰 배경과 날씨 배경 양쪽에서 보이는 색을 쓴다.
 import type { ISourceOptions } from "@tsparticles/engine";
 
 import type { Weather } from "~/types/damage";
@@ -18,10 +19,10 @@ export const WEATHER_PARTICLES: Record<Weather, ISourceOptions> = {
     particles: {
       number: { value: 45, density: { enable: true } },
       shape: { type: "circle" },
-      paint: { fill: { enable: true, color: { value: ["#fffbe6", "#ffe38a", "#ffffff"] } } },
-      size: { value: { min: 1.5, max: 5 } },
+      paint: { fill: { enable: true, color: { value: ["#ffd23f", "#ffb020", "#ffe680"] } } },
+      size: { value: { min: 2, max: 6 } },
       opacity: {
-        value: { min: 0.1, max: 0.7 },
+        value: { min: 0.2, max: 0.8 },
         animation: { enable: true, speed: 0.6, sync: false },
       },
       move: {
@@ -43,10 +44,10 @@ export const WEATHER_PARTICLES: Record<Weather, ISourceOptions> = {
       number: { value: 180, density: { enable: true } },
       shape: { type: "line" },
       paint: {
-        stroke: { width: 1.2, color: { value: "#ffffff" } },
+        stroke: { width: 1.6, color: { value: ["#4f6f8f", "#6b8bab"] } },
       },
-      size: { value: { min: 6, max: 14 } },
-      opacity: { value: { min: 0.25, max: 0.6 } },
+      size: { value: { min: 10, max: 20 } },
+      opacity: { value: { min: 0.35, max: 0.75 } },
       rotate: { path: true },
       move: {
         enable: true,
@@ -66,10 +67,10 @@ export const WEATHER_PARTICLES: Record<Weather, ISourceOptions> = {
       number: { value: 240, density: { enable: true } },
       shape: { type: "circle" },
       paint: {
-        fill: { enable: true, color: { value: ["#a9803f", "#c9a463", "#e8d3a4", "#fff6e0"] } },
+        fill: { enable: true, color: { value: ["#7a5523", "#9c7034", "#b98d4c"] } },
       },
-      size: { value: { min: 0.6, max: 2.4 } },
-      opacity: { value: { min: 0.3, max: 0.85 } },
+      size: { value: { min: 0.8, max: 2.8 } },
+      opacity: { value: { min: 0.45, max: 0.9 } },
       move: {
         enable: true,
         direction: "right",
@@ -88,8 +89,12 @@ export const WEATHER_PARTICLES: Record<Weather, ISourceOptions> = {
     particles: {
       number: { value: 140, density: { enable: true } },
       shape: { type: "circle" },
-      paint: { fill: { enable: true, color: { value: "#ffffff" } } },
-      size: { value: { min: 1, max: 4.5 } },
+      // 흰 카드 위에서도 보이도록 연한 하늘색 테두리를 두른다.
+      paint: {
+        fill: { enable: true, color: { value: "#ffffff" } },
+        stroke: { width: 1, color: { value: "#8fb3d4" } },
+      },
+      size: { value: { min: 1.5, max: 5 } },
       opacity: { value: { min: 0.5, max: 1 } },
       move: {
         enable: true,

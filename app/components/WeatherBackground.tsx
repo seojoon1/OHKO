@@ -76,20 +76,29 @@ export function WeatherBackground({ weather }: { weather?: Weather }) {
   }, [weather, reducedMotion, Particles]);
 
   return (
-    <div
-      aria-hidden="true"
-      className="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
-    >
-      {LAYERS.map((layer) => (
-        <div
-          key={layer.weather}
-          data-active={layer.weather === weather}
-          className={`weather-layer ${layer.className}`}
-        />
-      ))}
+    <>
+      {/* 색 그라데이션: 카드 뒤 */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
+      >
+        {LAYERS.map((layer) => (
+          <div
+            key={layer.weather}
+            data-active={layer.weather === weather}
+            className={`weather-layer ${layer.className}`}
+          />
+        ))}
+      </div>
+
+      {/* 입자: 카드 앞을 지나가게 맨 위에 두고, 클릭은 통과시킨다. */}
       {weather && Particles && !reducedMotion && (
         // key 로 날씨가 바뀔 때마다 새로 띄우고, 나타날 때 서서히 보이게 한다.
-        <div key={weather} className="weather-particles absolute inset-0">
+        <div
+          key={weather}
+          aria-hidden="true"
+          className="weather-particles pointer-events-none fixed inset-0 z-50"
+        >
           <Particles
             id={`weather-${weather}`}
             className="absolute inset-0"
@@ -97,6 +106,6 @@ export function WeatherBackground({ weather }: { weather?: Weather }) {
           />
         </div>
       )}
-    </div>
+    </>
   );
 }
