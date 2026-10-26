@@ -72,8 +72,17 @@ export async function getRanking(format: BattleFormat) {
     .sort((a, b) => a.position - b.position);
 }
 
-export function getBattle(format: BattleFormat, showdownId: string) {
+export class PokemonNotFoundError extends Error {}
+
+// 인덱스(캐시됨)에 없는 ID는 외부 API를 부르지 않고 바로 실패한다.
+// 아무 ID로나 요청해 우리 서버가 외부 API에 요청을 쏟아내지 않게 하기 위해서다.
+export async function getBattle(format: BattleFormat, showdownId: string) {
+  const id = showdownId.toLowerCase();
+  const index = await getIndex();
+  if (!index.pokemon.some((pokemon) => pokemon.showdownId === id)) {
+    throw new PokemonNotFoundError(showdownId);
+  }
   return fetchCached<BattleResponse>(
-    `/api/battle/${format}/${encodeURIComponent(showdownId)}`,
+    `/api/battle/${format}/${encodeURIComponent(id)}`,
   );
 }
