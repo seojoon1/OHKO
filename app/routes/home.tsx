@@ -17,6 +17,7 @@ import {
 } from "~/components/OpponentModeTabs";
 import { SampleOpponents } from "~/components/SampleOpponents";
 import { SurvivalTable } from "~/components/SurvivalTable";
+import { WeatherBackground } from "~/components/WeatherBackground";
 import { WeatherSelect } from "~/components/WeatherSelect";
 import { useSampleOpponents } from "~/hooks/useSampleOpponents";
 import { toFormat } from "~/lib/champions.server";
@@ -24,6 +25,9 @@ import { getOpponents } from "~/lib/opponents.server";
 import type { PokemonInput, Weather } from "~/types/damage";
 
 const OPPONENT_COUNT = 20;
+
+// 날씨 배경 위에서도 읽히도록 반투명 흰 카드로 감싼다.
+const CARD = "rounded-lg bg-white/85 p-4 shadow-sm backdrop-blur-sm";
 
 export function meta({}: Route.MetaArgs) {
   return [{ title: "OHKO" }];
@@ -54,6 +58,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 
   return (
     <main className="mx-auto max-w-7xl p-4">
+      <WeatherBackground weather={weather} />
       <div className="mb-4 flex items-center justify-between">
         <h1 className="text-2xl font-bold">OHKO</h1>
         <div className="flex items-center gap-4">
@@ -68,13 +73,13 @@ export default function Home({ loaderData }: Route.ComponentProps) {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
-        <section className="space-y-2 lg:sticky lg:top-4 lg:self-start">
+        <section className={`space-y-2 lg:sticky lg:top-4 lg:self-start ${CARD}`}>
           <h2 className="font-semibold">내 포켓몬</h2>
           <MyPokemonForm value={myPokemon} onChange={setMyPokemon} />
           {myPokemon && <BulkSummary pokemon={myPokemon} />}
         </section>
 
-        <section className="space-y-3">
+        <section className={`space-y-3 ${CARD}`}>
           <OpponentModeTabs value={mode} onChange={setMode} />
           {mode === "sample" && <SampleOpponents sample={sample} />}
           {mode === "custom" && (
