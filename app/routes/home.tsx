@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router";
 
 import type { Route } from "./+types/home";
+import { BulkSummary } from "~/components/BulkSummary";
 import {
   type CustomOpponent,
   CustomOpponents,
@@ -70,6 +71,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
         <section className="space-y-2 lg:sticky lg:top-4 lg:self-start">
           <h2 className="font-semibold">내 포켓몬</h2>
           <MyPokemonForm value={myPokemon} onChange={setMyPokemon} />
+          {myPokemon && <BulkSummary pokemon={myPokemon} />}
         </section>
 
         <section className="space-y-3">
