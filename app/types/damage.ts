@@ -15,6 +15,8 @@ export interface PokemonInput {
   sp?: Partial<StatsTable>;
   /** 남은 HP (1~100%). 없으면 100% */
   hpPercent?: number;
+  /** 기술 4칸 (빈 칸은 undefined). 계산에는 쓰지 않고 어떤 기술로 계산할지 고르는 데 쓴다. */
+  moves?: (string | undefined)[];
   boosts?: Partial<StatsTable>;
 }
 
