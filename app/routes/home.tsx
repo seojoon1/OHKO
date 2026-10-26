@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Link } from "react-router";
 
 import type { Route } from "./+types/home";
 import { BulkSummary } from "~/components/BulkSummary";
@@ -63,17 +62,8 @@ export default function Home({ loaderData }: Route.ComponentProps) {
   return (
     <main className="mx-auto max-w-7xl p-4">
       <WeatherBackground weather={weather} />
-      <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">OHKO</h1>
-        <div className="flex items-center gap-4">
-          <Link
-            to={`/ranking?format=${format}`}
-            className="text-sm text-ink underline decoration-accent decoration-2 underline-offset-4"
-          >
-            사용률 순위
-          </Link>
-          <FormatToggle format={format} />
-        </div>
+      <div className="mb-4 flex justify-end">
+        <FormatToggle format={format} />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
