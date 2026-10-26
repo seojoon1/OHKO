@@ -44,6 +44,7 @@ export function SurvivalTable({
           ability: opponent.ability,
           item: opponent.item,
           sp: move.sp ?? opponent.sp,
+          boosts: opponent.boosts,
         },
         defender,
         move: { name: move.name },

@@ -26,6 +26,7 @@ export function toOpponentSet(pokemon: PokemonInput | null): OpponentSet | null 
     ability,
     item: pokemon.item,
     sp: pokemon.sp ?? {},
+    boosts: pokemon.boosts,
     moves: moves.map((move) => ({
       name: move,
       koName: toKoName("move", move),

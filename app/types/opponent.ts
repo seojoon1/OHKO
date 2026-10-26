@@ -21,6 +21,8 @@ export interface OpponentSet {
   item?: string;
   /** 능력 포인트 */
   sp: Partial<StatsTable>;
+  /** 랭크 변화 (사용자 지정 상대) */
+  boosts?: Partial<StatsTable>;
   /** 변화기를 뺀 공격 기술 상위 4개 */
   moves: OpponentMove[];
 }
