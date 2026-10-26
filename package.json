@@ -7,7 +7,8 @@
     "dev": "react-router dev",
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",
-    "fetch:names": "node scripts/fetch-names.mjs"
+    "fetch:names": "node scripts/fetch-names.mjs",
+    "build:calc-data": "node scripts/build-calc-data.mjs"
   },
   "dependencies": {
     "@react-router/node": "^8.5.0",
