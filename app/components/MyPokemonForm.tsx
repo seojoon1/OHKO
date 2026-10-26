@@ -38,6 +38,14 @@ const NATURES = [...gen.natures]
   }))
   .sort((a, b) => a.label.localeCompare(b.label, "ko"));
 
+// @smogon/calc 의 챔피언스 데이터는 포켓몬마다 첫 특성만 갖고 있어서, 전체 특성에서 고른다.
+const ABILITIES = [...gen.abilities]
+  .map((ability) => ({
+    value: ability.name,
+    label: toKoName("ability", ability.name),
+  }))
+  .sort((a, b) => a.label.localeCompare(b.label, "ko"));
+
 const ITEMS = [...gen.items]
   .map((item) => ({ value: item.name, label: toKoName("item", item.name) }))
   .sort((a, b) => a.label.localeCompare(b.label, "ko"));
@@ -104,10 +112,7 @@ export function MyPokemonForm({
             <div className="flex flex-col gap-1">
               특성
               <SearchSelect
-                options={abilitiesOf(value.name).map((ability) => ({
-                  value: ability,
-                  label: toKoName("ability", ability),
-                }))}
+                options={ABILITIES}
                 value={value.ability}
                 onChange={(ability) => onChange({ ...value, ability })}
                 className={fieldClass}
