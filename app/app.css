@@ -21,91 +21,47 @@ body {
 }
 
 /* ── 날씨 배경 ───────────────────────────────────────────────
-   WeatherBackground 가 날씨마다 층을 하나씩 깔고, 고른 날씨만 opacity 1 로 보인다. */
+   WeatherBackground 가 날씨마다 색 층을 하나씩 깔고, 고른 날씨만 opacity 1 로 보인다.
+   움직이는 입자(비/눈/모래/빛)는 tsParticles 가 그린다 (weatherParticles.ts). */
 .weather-layer {
   position: absolute;
   inset: 0;
   opacity: 0;
-  transition: opacity 700ms ease;
+  transition: opacity 900ms ease;
 }
 .weather-layer[data-active="true"] {
   opacity: 1;
 }
-.weather-fx {
-  position: absolute;
-  inset: -50%;
+
+/* 날씨를 바꾸면 새 입자 층이 서서히 나타난다. */
+.weather-particles {
+  animation: weather-fade-in 900ms ease both;
+}
+@keyframes weather-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-/* 쾌청: 따뜻한 그라데이션 + 천천히 도는 햇살 */
 .weather-sun {
-  background: linear-gradient(160deg, #fff7d1 0%, #ffe08a 45%, #ffb867 100%);
-}
-.weather-sun .weather-fx {
   background:
-    radial-gradient(circle at 80% 15%, rgb(255 255 255 / 0.9) 0, rgb(255 236 150 / 0.6) 8%, transparent 25%),
-    repeating-conic-gradient(from 0deg at 80% 15%, rgb(255 255 255 / 0.25) 0deg 6deg, transparent 6deg 18deg);
-  animation: weather-spin 60s linear infinite;
-  transform-origin: 80% 15%;
+    radial-gradient(circle at 85% 10%, rgb(255 255 255 / 0.95) 0, rgb(255 236 150 / 0.7) 10%, transparent 35%),
+    linear-gradient(160deg, #fff7d1 0%, #ffe08a 45%, #ffb867 100%);
 }
-
-/* 비: 푸른 회색 그라데이션 + 사선 빗줄기 */
 .weather-rain {
   background: linear-gradient(180deg, #c9d6e3 0%, #9fb3c8 60%, #7f95ad 100%);
 }
-.weather-rain .weather-fx {
-  background-image: repeating-linear-gradient(
-    105deg,
-    transparent 0 14px,
-    rgb(255 255 255 / 0.45) 14px 15px,
-    transparent 15px 40px
-  );
-  background-size: 120px 120px;
-  animation: weather-rain 0.6s linear infinite;
-}
-
-/* 모래바람: 모래색 그라데이션 + 옆으로 흩날리는 모래 */
 .weather-sand {
   background: linear-gradient(170deg, #f6e7c1 0%, #e8cf96 50%, #d4b072 100%);
 }
-.weather-sand .weather-fx {
-  background-image:
-    radial-gradient(circle, rgb(150 110 50 / 0.35) 1.5px, transparent 2px),
-    radial-gradient(circle, rgb(255 255 255 / 0.4) 1px, transparent 1.5px);
-  background-size: 60px 40px, 90px 55px;
-  animation: weather-sand 3s linear infinite;
-}
-
-/* 설경: 하늘색/흰색 그라데이션 + 내리는 눈 */
 .weather-snow {
   background: linear-gradient(180deg, #eaf4fb 0%, #d6e9f6 60%, #c3dcef 100%);
 }
-.weather-snow .weather-fx {
-  background-image:
-    radial-gradient(circle, #fff 2px, transparent 2.5px),
-    radial-gradient(circle, rgb(255 255 255 / 0.8) 1.5px, transparent 2px);
-  background-size: 80px 80px, 50px 50px;
-  background-position: 0 0, 25px 25px;
-  animation: weather-snow 10s linear infinite;
-}
-
-@keyframes weather-spin {
-  to { transform: rotate(360deg); }
-}
-@keyframes weather-rain {
-  to { background-position: 0 120px; }
-}
-@keyframes weather-sand {
-  to { background-position: 600px 40px, 900px 55px; }
-}
-@keyframes weather-snow {
-  to { background-position: 80px 800px, 75px 525px; }
-}
 
 @media (prefers-reduced-motion: reduce) {
-  .weather-fx {
-    animation: none;
-  }
   .weather-layer {
     transition: none;
+  }
+  .weather-particles {
+    animation: none;
   }
 }
