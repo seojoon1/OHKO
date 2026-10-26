@@ -1,6 +1,8 @@
 import { Generations, toID, type StatID } from "@smogon/calc";
 
+import { MoveSlots } from "~/components/MoveSlots";
 import { fieldClass, PokemonPicker } from "~/components/PokemonPicker";
+import { RankControl } from "~/components/RankControl";
 import { SearchSelect } from "~/components/SearchSelect";
 import { toKoName } from "~/lib/names";
 import type { PokemonInput } from "~/types/damage";
@@ -158,6 +160,16 @@ export function MyPokemonForm({
           ))}
         </div>
       </div>
+
+      <RankControl
+        boosts={draft.boosts}
+        onChange={(boosts) => onChange({ ...draft, boosts })}
+      />
+
+      <MoveSlots
+        moves={draft.moves}
+        onChange={(moves) => onChange({ ...draft, moves })}
+      />
     </section>
   );
 }

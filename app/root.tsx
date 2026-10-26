@@ -8,6 +8,7 @@ import {
 } from "react-router";
 
 import type { Route } from "./+types/root";
+import { SiteHeader } from "~/components/SiteHeader";
 import "./app.css";
 
 export const links: Route.LinksFunction = () => [
@@ -33,6 +34,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
+        <SiteHeader />
         {children}
         <footer className="mx-auto max-w-4xl p-4 text-xs text-gray-500">
           Battle data provided by{" "}
@@ -44,6 +46,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
           >
             Pokémon Champions Battle Data
           </a>
+          <p className="mt-1">
+            made by{" "}
+            <a
+              href="https://github.com/seojoon1"
+              target="_blank"
+              rel="noreferrer"
+              className="underline"
+            >
+              seojoon1
+            </a>
+          </p>
         </footer>
         <ScrollRestoration />
         <Scripts />

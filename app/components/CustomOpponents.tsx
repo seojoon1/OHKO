@@ -1,53 +1,44 @@
-import { Generations } from "@smogon/calc";
-
+import { chosenMoves } from "~/components/MoveSlots";
 import { MyPokemonForm } from "~/components/MyPokemonForm";
-import { fieldClass } from "~/components/PokemonPicker";
-import { SearchSelect } from "~/components/SearchSelect";
 import { toMega } from "~/lib/mega";
 import { toKoName } from "~/lib/names";
 import type { PokemonInput } from "~/types/damage";
 import type { OpponentSet } from "~/types/opponent";
 
-const gen = Generations.get(0);
-
-export const MOVE_SLOTS = 4;
-
-// 공격 기술만 (변화기는 데미지가 없다)
-const ATTACK_MOVES = [...gen.moves]
-  .filter((move) => move.category === "Physical" || move.category === "Special")
-  .map((move) => ({ value: move.name, label: toKoName("move", move.name) }))
-  .sort((a, b) => a.label.localeCompare(b.label, "ko"));
-
 export interface CustomOpponent {
   id: number;
+  /** 기술도 pokemon.moves 에 들어 있다 */
   pokemon: PokemonInput | null;
-  moves: (string | undefined)[];
 }
 
 export function emptyCustomOpponent(id: number): CustomOpponent {
-  return { id, pokemon: null, moves: Array(MOVE_SLOTS).fill(undefined) };
+  return { id, pokemon: null };
 }
 
-// 계산할 수 있는 상대(포켓몬과 기술 1개 이상)만 OpponentSet 으로 바꾼다.
+// 입력값(PokemonInput) → 결과 표용 OpponentSet. 포켓몬과 기술 1개 이상이 있어야 한다.
+export function toOpponentSet(pokemon: PokemonInput | null): OpponentSet | null {
+  const moves = chosenMoves(pokemon?.moves);
+  if (!pokemon?.name || moves.length === 0) return null;
+  const { name, ability } = toMega(pokemon.name, pokemon.item, pokemon.ability);
+  return {
+    name,
+    koName: toKoName("pokemon", name),
+    ability,
+    item: pokemon.item,
+    sp: pokemon.sp ?? {},
+    boosts: pokemon.boosts,
+    moves: moves.map((move) => ({
+      name: move,
+      koName: toKoName("move", move),
+      nature: pokemon.nature,
+    })),
+  };
+}
+
 export function toOpponentSets(customs: CustomOpponent[]): OpponentSet[] {
-  return customs.flatMap(({ pokemon, moves }) => {
-    const chosen = moves.filter((move): move is string => Boolean(move));
-    if (!pokemon?.name || chosen.length === 0) return [];
-    const { name, ability } = toMega(pokemon.name, pokemon.item, pokemon.ability);
-    return [
-      {
-        name,
-        koName: toKoName("pokemon", name),
-        ability,
-        item: pokemon.item,
-        sp: pokemon.sp ?? {},
-        moves: chosen.map((move) => ({
-          name: move,
-          koName: toKoName("move", move),
-          nature: pokemon.nature,
-        })),
-      },
-    ];
+  return customs.flatMap(({ pokemon }) => {
+    const set = toOpponentSet(pokemon);
+    return set ? [set] : [];
   });
 }
 
@@ -57,8 +48,8 @@ interface Props {
 }
 
 export function CustomOpponents({ value, onChange }: Props) {
-  const update = (id: number, patch: Partial<CustomOpponent>) =>
-    onChange(value.map((item) => (item.id === id ? { ...item, ...patch } : item)));
+  const update = (id: number, pokemon: PokemonInput) =>
+    onChange(value.map((item) => (item.id === id ? { ...item, pokemon } : item)));
 
   const nextId = Math.max(0, ...value.map((item) => item.id)) + 1;
 
@@ -79,29 +70,9 @@ export function CustomOpponents({ value, onChange }: Props) {
           </div>
           <MyPokemonForm
             value={custom.pokemon}
-            onChange={(pokemon) => update(custom.id, { pokemon })}
+            onChange={(pokemon) => update(custom.id, pokemon)}
             placeholder="상대 포켓몬 검색"
           />
-          <div className="grid grid-cols-2 gap-2 text-sm">
-            {custom.moves.map((move, slot) => (
-              <div key={slot} className="flex flex-col gap-1">
-                기술 {slot + 1}
-                <SearchSelect
-                  options={ATTACK_MOVES}
-                  value={move}
-                  onChange={(next) =>
-                    update(custom.id, {
-                      moves: custom.moves.map((item, i) =>
-                        i === slot ? next : item,
-                      ),
-                    })
-                  }
-                  emptyLabel="없음"
-                  className={fieldClass}
-                />
-              </div>
-            ))}
-          </div>
         </div>
       ))}
 

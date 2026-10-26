@@ -21,7 +21,14 @@ const gen = Generations.get(0);
 
 // 챔피언스 모드에서는 evs 자리에 능력 포인트를 넣는다.
 // hpPercent 가 있으면 그만큼의 현재 HP로 만든다 (확정 n타 판정이 현재 HP 기준이 된다).
-function toPokemon({ name, sp, hpPercent, ...options }: PokemonInput) {
+// moves 는 입력 폼의 기술 칸이라 계산 라이브러리에 넘기지 않는다.
+function toPokemon({
+  name,
+  sp,
+  hpPercent,
+  moves: _moves,
+  ...options
+}: PokemonInput) {
   const pokemon = new Pokemon(gen, name, { ...options, evs: sp });
   if (hpPercent === undefined || hpPercent >= 100) return pokemon;
   const curHP = Math.max(1, Math.floor((pokemon.maxHP() * hpPercent) / 100));
