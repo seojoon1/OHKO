@@ -43,10 +43,19 @@ export function SearchSelect({
       <input
         value={open ? query : (selected?.label ?? "")}
         placeholder={selected?.label ?? emptyLabel ?? "검색"}
+        // 고른 뒤에도 포커스가 남아 있어 onFocus 만으로는 다시 열리지 않는다.
+        // 클릭하거나 입력할 때도 연다.
         onFocus={() => setOpen(true)}
+        onClick={() => setOpen(true)}
+        onChange={(event) => {
+          setQuery(event.target.value);
+          setOpen(true);
+        }}
+        onKeyDown={(event) => {
+          if (event.key === "Escape") setOpen(false);
+        }}
         // 목록 클릭이 먼저 처리되도록 닫기를 늦춘다.
         onBlur={() => setTimeout(() => setOpen(false), 150)}
-        onChange={(event) => setQuery(event.target.value)}
         className={`w-full ${className}`}
       />
       {open && (
