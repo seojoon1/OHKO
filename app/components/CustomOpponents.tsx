@@ -32,7 +32,7 @@ export function emptyCustomOpponent(id: number): CustomOpponent {
 export function toOpponentSets(customs: CustomOpponent[]): OpponentSet[] {
   return customs.flatMap(({ pokemon, moves }) => {
     const chosen = moves.filter((move): move is string => Boolean(move));
-    if (!pokemon || chosen.length === 0) return [];
+    if (!pokemon?.name || chosen.length === 0) return [];
     const { name, ability } = toMega(pokemon.name, pokemon.item, pokemon.ability);
     return [
       {
@@ -82,28 +82,26 @@ export function CustomOpponents({ value, onChange }: Props) {
             onChange={(pokemon) => update(custom.id, { pokemon })}
             placeholder="상대 포켓몬 검색"
           />
-          {custom.pokemon && (
-            <div className="grid grid-cols-2 gap-2 text-sm">
-              {custom.moves.map((move, slot) => (
-                <div key={slot} className="flex flex-col gap-1">
-                  기술 {slot + 1}
-                  <SearchSelect
-                    options={ATTACK_MOVES}
-                    value={move}
-                    onChange={(next) =>
-                      update(custom.id, {
-                        moves: custom.moves.map((item, i) =>
-                          i === slot ? next : item,
-                        ),
-                      })
-                    }
-                    emptyLabel="없음"
-                    className={fieldClass}
-                  />
-                </div>
-              ))}
-            </div>
-          )}
+          <div className="grid grid-cols-2 gap-2 text-sm">
+            {custom.moves.map((move, slot) => (
+              <div key={slot} className="flex flex-col gap-1">
+                기술 {slot + 1}
+                <SearchSelect
+                  options={ATTACK_MOVES}
+                  value={move}
+                  onChange={(next) =>
+                    update(custom.id, {
+                      moves: custom.moves.map((item, i) =>
+                        i === slot ? next : item,
+                      ),
+                    })
+                  }
+                  emptyLabel="없음"
+                  className={fieldClass}
+                />
+              </div>
+            ))}
+          </div>
         </div>
       ))}
 

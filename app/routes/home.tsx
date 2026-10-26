@@ -76,7 +76,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
         <section className={`space-y-2 lg:sticky lg:top-4 lg:self-start ${CARD}`}>
           <h2 className="font-semibold">내 포켓몬</h2>
           <MyPokemonForm value={myPokemon} onChange={setMyPokemon} />
-          {myPokemon && <BulkSummary pokemon={myPokemon} />}
+          {myPokemon?.name && <BulkSummary pokemon={myPokemon} />}
         </section>
 
         <section className={`space-y-3 ${CARD}`}>
@@ -89,7 +89,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
             <WeatherSelect value={weather} onChange={setWeather} />
           </div>
 
-          {!myPokemon ? (
+          {!myPokemon?.name ? (
             <p className="text-sm text-gray-500">
               왼쪽에서 내 포켓몬을 고르면 상대의 공격을 버티는지 계산합니다.
             </p>
