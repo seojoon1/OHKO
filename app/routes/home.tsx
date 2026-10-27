@@ -22,11 +22,9 @@ import { SurvivalTable } from "~/components/SurvivalTable";
 import { WeatherBackground } from "~/components/WeatherBackground";
 import { WeatherSelect } from "~/components/WeatherSelect";
 import { useSampleOpponents } from "~/hooks/useSampleOpponents";
+import { useTopOpponents } from "~/hooks/useTopOpponents";
 import { toFormat } from "~/lib/champions.server";
-import { getOpponents } from "~/lib/opponents.server";
 import type { PokemonInput, Weather } from "~/types/damage";
-
-const OPPONENT_COUNT = 20;
 
 // 날씨 배경 위에서도 읽히도록 반투명 흰 카드로 감싼다.
 const CARD = "rounded-lg bg-white/85 p-4 shadow-sm backdrop-blur-sm";
@@ -37,24 +35,28 @@ export function meta({}: Route.MetaArgs) {
 
 export async function loader({ request }: Route.LoaderArgs) {
   const format = toFormat(new URL(request.url).searchParams.get("format"));
-  return { format, opponents: await getOpponents(format, OPPONENT_COUNT) };
+  // 상위 20위 세팅은 탭을 열 때 /api/opponents 로 따로 불러온다 (외부 API 20번 호출을 기다리지 않게).
+  return { format };
 }
 
 export default function Home({ loaderData }: Route.ComponentProps) {
-  const { format, opponents } = loaderData;
+  const { format } = loaderData;
   const [myPokemon, setMyPokemon] = useState<PokemonInput | null>(null);
   const [mode, setMode] = useState<OpponentMode>("duel");
   const [duelOpponent, setDuelOpponent] = useState<PokemonInput | null>(null);
   const [weather, setWeather] = useState<Weather>();
 
   const sample = useSampleOpponents(format);
+  const top = useTopOpponents(format, mode === "top");
   const [customs, setCustoms] = useState<CustomOpponent[]>([
     emptyCustomOpponent(1),
   ]);
 
   const modeOpponents =
     mode === "top"
-      ? opponents
+      ? top?.status === "done"
+        ? top.opponents
+        : []
       : mode === "sample"
         ? sample.opponents
         : toOpponentSets(customs);
@@ -115,6 +117,12 @@ export default function Home({ loaderData }: Route.ComponentProps) {
             ) : (
               <p className="text-sm text-gray-500">상대 포켓몬을 골라 주세요.</p>
             )
+          ) : mode === "top" && top?.status !== "done" ? (
+            <p className="text-sm text-gray-500">
+              {top?.status === "error"
+                ? `${top.message} 탭을 다시 열면 다시 시도합니다.`
+                : "상위 20위 세팅을 불러오는 중…"}
+            </p>
           ) : modeOpponents.length === 0 ? (
             <p className="text-sm text-gray-500">상대를 추가해 주세요.</p>
           ) : (

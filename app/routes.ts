@@ -5,4 +5,5 @@ export default [
   route("ranking", "routes/ranking.tsx"),
   route("pokemon/:id", "routes/pokemon.tsx"),
   route("api/opponent/:name", "routes/api.opponent.tsx"),
+  route("api/opponents", "routes/api.opponents.tsx"),
 ] satisfies RouteConfig;
