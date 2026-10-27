@@ -2,3 +2,10 @@
 build
 node_modules
 README.md
+
+# 비밀 값과 로컬 전용 파일은 이미지에 넣지 않는다
+.env
+.env.*
+!.env.example
+.git
+.cache
