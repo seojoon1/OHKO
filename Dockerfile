@@ -15,8 +15,10 @@ WORKDIR /app
 RUN npm run build
 
 FROM node:24-alpine
+# root 대신 이미지에 있는 node 사용자로 실행한다. 파일은 root 소유로 두어 앱이 읽기만 할 수 있다.
 COPY ./package.json package-lock.json /app/
 COPY --from=production-dependencies-env /app/node_modules /app/node_modules
 COPY --from=build-env /app/build /app/build
 WORKDIR /app
+USER node
 CMD ["npm", "run", "start"]
