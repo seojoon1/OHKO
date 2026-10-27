@@ -1,5 +1,5 @@
 import { chosenMoves } from "~/components/MoveSlots";
-import { calcDamage } from "~/lib/damage";
+import { type Calculator, useCalculator } from "~/hooks/useCalculator";
 import { toMega } from "~/lib/mega";
 import { toKoName } from "~/lib/names";
 import { judge, VERDICT_STYLE, WEATHER_BY_ABILITY } from "~/lib/verdict";
@@ -21,6 +21,9 @@ interface Props {
 
 // 1대1 결과: 내 기술 → 상대, 상대 기술 → 나
 export function DuelResults({ me, opponent, format, weather }: Props) {
+  const calculator = useCalculator();
+  if (!calculator) return <p className="text-sm text-gray-500">계산 준비 중…</p>;
+
   const mine = withMega(me);
   const theirs = withMega(opponent);
   const fieldWeather =
@@ -32,6 +35,7 @@ export function DuelResults({ me, opponent, format, weather }: Props) {
     <div className="space-y-4">
       <MoveTable
         title={`내 ${toKoName("pokemon", mine.name)} → 상대 ${toKoName("pokemon", theirs.name)}`}
+        calculator={calculator}
         attacker={mine}
         defender={theirs}
         format={format}
@@ -39,6 +43,7 @@ export function DuelResults({ me, opponent, format, weather }: Props) {
       />
       <MoveTable
         title={`상대 ${toKoName("pokemon", theirs.name)} → 내 ${toKoName("pokemon", mine.name)}`}
+        calculator={calculator}
         attacker={theirs}
         defender={mine}
         format={format}
@@ -49,6 +54,7 @@ export function DuelResults({ me, opponent, format, weather }: Props) {
 }
 
 interface MoveTableProps {
+  calculator: Calculator;
   title: string;
   attacker: PokemonInput;
   defender: PokemonInput;
@@ -56,7 +62,14 @@ interface MoveTableProps {
   weather?: Weather;
 }
 
-function MoveTable({ title, attacker, defender, format, weather }: MoveTableProps) {
+function MoveTable({
+  calculator,
+  title,
+  attacker,
+  defender,
+  format,
+  weather,
+}: MoveTableProps) {
   const moves = chosenMoves(attacker.moves);
 
   return (
@@ -75,7 +88,7 @@ function MoveTable({ title, attacker, defender, format, weather }: MoveTableProp
           </thead>
           <tbody>
             {moves.map((move, index) => {
-              const { result, error } = calcDamage({
+              const { result, error } = calculator.calcDamage({
                 attacker,
                 defender,
                 move: { name: move },

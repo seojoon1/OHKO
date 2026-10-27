@@ -1,5 +1,5 @@
 import { fieldClass } from "~/components/PokemonPicker";
-import { calcBulk } from "~/lib/bulk";
+import { useCalculator } from "~/hooks/useCalculator";
 import type { PokemonInput } from "~/types/damage";
 
 interface Props {
@@ -10,7 +10,9 @@ interface Props {
 // 남은 HP(1~100%) 조절. 포켓몬을 고르면 실제 HP 값도 보여준다.
 export function HpControl({ pokemon, onChange }: Props) {
   const percent = pokemon.hpPercent ?? 100;
-  const maxHP = pokemon.name ? calcBulk(pokemon)?.hp : undefined;
+  const calculator = useCalculator();
+  // 계산기가 준비되기 전에는 실제 HP 값을 빼고 % 만 보여준다.
+  const maxHP = pokemon.name ? calculator?.calcBulk(pokemon)?.hp : undefined;
   const currentHP =
     maxHP !== undefined
       ? Math.max(1, Math.floor((maxHP * percent) / 100))

@@ -1,11 +1,12 @@
-import { calcBulk } from "~/lib/bulk";
+import { useCalculator } from "~/hooks/useCalculator";
 import type { PokemonInput } from "~/types/damage";
 
 const format = (value: number) => value.toLocaleString("ko-KR");
 
 // 내 포켓몬의 물리/특수 내구 지수 (HP × 방어, HP × 특방)
 export function BulkSummary({ pokemon }: { pokemon: PokemonInput }) {
-  const bulk = calcBulk(pokemon);
+  const calculator = useCalculator();
+  const bulk = calculator?.calcBulk(pokemon);
   if (!bulk) return null;
 
   return (

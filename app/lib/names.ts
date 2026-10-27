@@ -1,7 +1,7 @@
 // 영문(Showdown 표기) → 한글 이름 변환.
 // data/*.json 은 scripts/fetch-names.mjs 가 만든다 (런타임에 PokéAPI 호출 없음).
 
-import { toID } from "@smogon/calc";
+import { toID } from "~/lib/championsData";
 
 import abilities from "../../data/abilities.json";
 import items from "../../data/items.json";

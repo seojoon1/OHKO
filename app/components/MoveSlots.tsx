@@ -1,17 +1,15 @@
-import { Generations } from "@smogon/calc";
-
 import { fieldClass } from "~/components/PokemonPicker";
 import { SearchSelect } from "~/components/SearchSelect";
+import { ATTACK_MOVES as ATTACK_MOVE_NAMES } from "~/lib/championsData";
 import { toKoName } from "~/lib/names";
-
-const gen = Generations.get(0);
 
 export const MOVE_SLOTS = 4;
 
 // 공격 기술만 (변화기는 데미지가 없다)
-const ATTACK_MOVES = [...gen.moves]
-  .filter((move) => move.category === "Physical" || move.category === "Special")
-  .map((move) => ({ value: move.name, label: toKoName("move", move.name) }))
+const ATTACK_MOVES = ATTACK_MOVE_NAMES.map((name) => ({
+  value: name,
+  label: toKoName("move", name),
+}))
   .sort((a, b) => a.label.localeCompare(b.label, "ko"));
 
 // 고른 기술만 (빈 칸 제외)
