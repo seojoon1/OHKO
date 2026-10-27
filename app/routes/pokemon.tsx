@@ -2,7 +2,11 @@ import { Link } from "react-router";
 
 import type { Route } from "./+types/pokemon";
 import { FormatToggle } from "~/components/FormatToggle";
-import { getBattle, toFormat } from "~/lib/champions.server";
+import {
+  getBattle,
+  PokemonNotFoundError,
+  toFormat,
+} from "~/lib/champions.server";
 import { type NameKind, toKoName } from "~/lib/names";
 import type { BattleCategory, BattleRow } from "~/types/champions";
 
@@ -23,8 +27,11 @@ export async function loader({ params, request }: Route.LoaderArgs) {
       pokemon: toKoName("pokemon", battle.showdownId),
       rows,
     };
-  } catch {
-    throw new Response("포켓몬을 찾을 수 없습니다.", { status: 404 });
+  } catch (error) {
+    if (error instanceof PokemonNotFoundError) {
+      throw new Response("포켓몬을 찾을 수 없습니다.", { status: 404 });
+    }
+    throw new Response("통계 서버에 연결할 수 없습니다.", { status: 502 });
   }
 }
 
